@@ -1,10 +1,9 @@
 import { useRef, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Html } from "@react-three/drei";
-import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import LoadingScreen from "./LoadingScreen";
-import { CameraProvider } from "./CameraContext";
+import { useCameraContext, CameraContext } from "./CameraContext";
 import CameraRig from "./CameraRig";
 import useScrollTriggers from "./useScrollTriggers";
 
@@ -79,7 +78,8 @@ function CameraTriggers() {
   return null;
 }
 
-function Scene({ controlsRef }: { controlsRef: React.RefObject<OrbitControlsImpl | null> }) {
+function Scene() {
+  const { controlsRef } = useCameraContext();
   return (
     <>
       <ambientLight intensity={0.3} color="#ffd6b0" />
@@ -102,19 +102,19 @@ function Scene({ controlsRef }: { controlsRef: React.RefObject<OrbitControlsImpl
 }
 
 export default function Experience() {
-  const controlsRef = useRef<OrbitControlsImpl>(null);
+  const contextValue = useCameraContext();
   return (
-    <CameraProvider controlsRef={controlsRef}>
-      <Canvas
-        camera={{ position: [0, 1.5, 6], fov: 50 }}
-        gl={{ antialias: true }}
-        dpr={[1, 2]}
-      >
+    <Canvas
+      camera={{ position: [0, 1.5, 6], fov: 50 }}
+      gl={{ antialias: true }}
+      dpr={[1, 2]}
+    >
+      <CameraContext.Provider value={contextValue}>
         <color attach="background" args={["#1a0f0a"]} />
         <Suspense fallback={<LoadingScreen />}>
-          <Scene controlsRef={controlsRef} />
+          <Scene />
         </Suspense>
-      </Canvas>
-    </CameraProvider>
+      </CameraContext.Provider>
+    </Canvas>
   );
 }
