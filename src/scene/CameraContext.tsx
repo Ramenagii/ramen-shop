@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, type RefObject, type ReactNode } from "react";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 
 export interface CameraStop {
   position: [number, number, number];
@@ -13,6 +14,7 @@ export const STOPS: Record<string, CameraStop> = {
 interface CameraContextValue {
   currentStop: string;
   goToStop: (stop: string) => void;
+  controlsRef: RefObject<OrbitControlsImpl | null>;
 }
 
 const CameraContext = createContext<CameraContextValue | null>(null);
@@ -23,11 +25,11 @@ export function useCameraContext() {
   return ctx;
 }
 
-export function CameraProvider({ children }: { children: ReactNode }) {
+export function CameraProvider({ children, controlsRef }: { children: ReactNode; controlsRef: RefObject<OrbitControlsImpl | null> }) {
   const [currentStop, setCurrentStop] = useState("hero");
   const goToStop = useCallback((stop: string) => setCurrentStop(stop), []);
   return (
-    <CameraContext.Provider value={{ currentStop, goToStop }}>
+    <CameraContext.Provider value={{ currentStop, goToStop, controlsRef }}>
       {children}
     </CameraContext.Provider>
   );

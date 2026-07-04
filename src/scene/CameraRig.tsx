@@ -6,7 +6,7 @@ import { useCameraContext, STOPS } from "./CameraContext";
 
 export default function CameraRig() {
   const { camera } = useThree();
-  const { currentStop } = useCameraContext();
+  const { currentStop, controlsRef } = useCameraContext();
   const proxy = useRef({ x: 0, y: 0, z: 0 });
   const target = useRef(new THREE.Vector3(0, 0, 0));
 
@@ -38,7 +38,10 @@ export default function CameraRig() {
 
   useFrame(() => {
     target.current.set(proxy.current.x, proxy.current.y, proxy.current.z);
-    camera.lookAt(target.current);
+    if (controlsRef.current) {
+      controlsRef.current.target.copy(target.current);
+      controlsRef.current.update();
+    }
   });
 
   return null;

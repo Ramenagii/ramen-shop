@@ -1,6 +1,7 @@
 import { useRef, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Html } from "@react-three/drei";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import LoadingScreen from "./LoadingScreen";
 import { CameraProvider } from "./CameraContext";
@@ -78,7 +79,7 @@ function CameraTriggers() {
   return null;
 }
 
-function Scene() {
+function Scene({ controlsRef }: { controlsRef: React.RefObject<OrbitControlsImpl | null> }) {
   return (
     <>
       <ambientLight intensity={0.3} color="#ffd6b0" />
@@ -89,6 +90,7 @@ function Scene() {
       <CameraRig />
       <CameraTriggers />
       <OrbitControls
+        ref={controlsRef}
         enableDamping
         dampingFactor={0.08}
         minDistance={3}
@@ -100,8 +102,9 @@ function Scene() {
 }
 
 export default function Experience() {
+  const controlsRef = useRef<OrbitControlsImpl>(null);
   return (
-    <CameraProvider>
+    <CameraProvider controlsRef={controlsRef}>
       <Canvas
         camera={{ position: [0, 1.5, 6], fov: 50 }}
         gl={{ antialias: true }}
@@ -109,7 +112,7 @@ export default function Experience() {
       >
         <color attach="background" args={["#1a0f0a"]} />
         <Suspense fallback={<LoadingScreen />}>
-          <Scene />
+          <Scene controlsRef={controlsRef} />
         </Suspense>
       </Canvas>
     </CameraProvider>

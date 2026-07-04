@@ -6,14 +6,12 @@ import { useCameraContext } from "./CameraContext";
 gsap.registerPlugin(ScrollTrigger);
 
 export default function useScrollTriggers() {
-  const { goToStop, currentStop } = useCameraContext();
+  const { goToStop } = useCameraContext();
   const lastStop = useRef("hero");
 
   useEffect(() => {
     const container = document.getElementById("scroll-container");
     if (!container) return;
-
-    lastStop.current = currentStop;
 
     const trigger = ScrollTrigger.create({
       trigger: container,
@@ -29,5 +27,5 @@ export default function useScrollTriggers() {
     });
 
     return () => trigger.kill();
-  }, [goToStop, currentStop]);
+  }, [goToStop]);
 }
