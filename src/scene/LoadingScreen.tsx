@@ -1,21 +1,20 @@
 import { useEffect, useRef } from "react";
 import { Html, useProgress } from "@react-three/drei";
-import lottie from "lottie-web";
+import { DotLottie } from "@lottiefiles/dotlottie-web";
 
 export default function LoadingScreen() {
   const { progress } = useProgress();
-  const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
-    const anim = lottie.loadAnimation({
-      container: containerRef.current,
-      renderer: "svg",
-      loop: true,
+    if (!canvasRef.current) return;
+    const dotLottie = new DotLottie({
+      canvas: canvasRef.current,
+      src: "/models/Ramen%20noodles.lottie",
       autoplay: true,
-      path: "/animations/ramen-noodles.json",
+      loop: true,
     });
-    return () => anim.destroy();
+    return () => dotLottie.destroy();
   }, []);
 
   return (
@@ -28,7 +27,12 @@ export default function LoadingScreen() {
           gap: 12,
         }}
       >
-        <div ref={containerRef} style={{ width: 160, height: 160 }} />
+        <canvas
+          ref={canvasRef}
+          width={160}
+          height={160}
+          style={{ width: 160, height: 160 }}
+        />
         <div
           style={{
             color: "#f1bb18",
