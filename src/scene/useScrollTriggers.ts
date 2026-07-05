@@ -5,6 +5,8 @@ import { useCameraContext } from "./CameraContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const STOP_ORDER = ["hero", "about", "projects", "contact"];
+
 export default function useScrollTriggers() {
   const { goToStop } = useCameraContext();
   const lastStop = useRef("hero");
@@ -18,7 +20,8 @@ export default function useScrollTriggers() {
       start: "top top",
       end: "bottom bottom",
       onUpdate: (self) => {
-        const next = self.progress > 0.5 ? "about" : "hero";
+        const idx = Math.min(Math.floor(self.progress * STOP_ORDER.length), STOP_ORDER.length - 1);
+        const next = STOP_ORDER[idx];
         if (next !== lastStop.current) {
           lastStop.current = next;
           goToStop(next);

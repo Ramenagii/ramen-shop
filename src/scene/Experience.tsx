@@ -8,46 +8,35 @@ import CameraRig from "./CameraRig";
 import useScrollTriggers from "./useScrollTriggers";
 import Shop from "../models/Shop";
 
-function SteamWisp() {
-  const positions: [number, number, number][] = [
-    [0, 0, 0],
-    [0.08, 0.15, 0.05],
-    [-0.06, 0.3, -0.04],
-    [0.04, 0.45, 0.02],
-  ];
+function AboutOverlay() {
+  const { modelBounds, currentStop } = useCameraContext();
+
+  if (!modelBounds || currentStop !== "about") return null;
+
+  const [, minY] = modelBounds.min;
+  const [, , h] = modelBounds.size;
+  const [cx, , cz] = modelBounds.center;
+
   return (
-    <group position={[3, 0.5, 0]}>
-      {positions.map((pos, i) => (
-        <mesh key={i} position={pos}>
-          <sphereGeometry args={[0.12 - i * 0.02, 8, 8]} />
-          <meshStandardMaterial
-            color="#f5e6d0"
-            transparent
-            opacity={0.12 - i * 0.02}
-            roughness={0.4}
-          />
-        </mesh>
-      ))}
-      <Html position={[0, 0.7, 0]} center>
-        <div
-          style={{
-            background: "rgba(20, 12, 8, 0.85)",
-            backdropFilter: "blur(6px)",
-            color: "#f0d5b0",
-            padding: "12px 20px",
-            borderRadius: 8,
-            fontFamily: "system-ui, sans-serif",
-            fontSize: 14,
-            lineHeight: 1.5,
-            maxWidth: 200,
-            textAlign: "center",
-            border: "1px solid rgba(212, 105, 59, 0.3)",
-          }}
-        >
-          About section placeholder
-        </div>
-      </Html>
-    </group>
+    <Html position={[cx, minY + h * 0.4, cz]} center>
+      <div
+        style={{
+          background: "rgba(20, 12, 8, 0.85)",
+          backdropFilter: "blur(6px)",
+          color: "#f0d5b0",
+          padding: "12px 20px",
+          borderRadius: 8,
+          fontFamily: "system-ui, sans-serif",
+          fontSize: 14,
+          lineHeight: 1.5,
+          maxWidth: 200,
+          textAlign: "center",
+          border: "1px solid rgba(212, 105, 59, 0.3)",
+        }}
+      >
+        About section placeholder
+      </div>
+    </Html>
   );
 }
 
@@ -86,10 +75,10 @@ function Scene() {
       />
       <Environment preset="sunset" />
       <Shop />
-      <SteamWisp />
       <CameraRig />
       <CameraTriggers />
       <CameraDebug />
+      <AboutOverlay />
       <OrbitControls
         ref={controlsRef}
         enableDamping

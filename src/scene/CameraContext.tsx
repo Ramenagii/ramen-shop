@@ -6,15 +6,20 @@ export interface CameraStop {
   target: [number, number, number];
 }
 
-export const STOPS: Record<string, CameraStop> = {
-  hero: { position: [0, 1.5, 6], target: [0, 0, 0] },
-  about: { position: [4, 2.5, 4], target: [3, 0.3, 0] },
-};
+export interface BBoxInfo {
+  min: [number, number, number];
+  max: [number, number, number];
+  center: [number, number, number];
+  size: [number, number, number];
+  scaleFactor: number;
+}
 
 interface CameraContextValue {
   currentStop: string;
   goToStop: (stop: string) => void;
   controlsRef: RefObject<OrbitControlsImpl | null>;
+  modelBounds: BBoxInfo | null;
+  setModelBounds: (bbox: BBoxInfo) => void;
 }
 
 export const CameraContext = createContext<CameraContextValue | null>(null);
@@ -27,10 +32,11 @@ export function useCameraContext() {
 
 export function CameraProvider({ children }: { children: ReactNode }) {
   const [currentStop, setCurrentStop] = useState("hero");
+  const [modelBounds, setModelBounds] = useState<BBoxInfo | null>(null);
   const goToStop = useCallback((stop: string) => setCurrentStop(stop), []);
   const controlsRef = useRef<OrbitControlsImpl>(null);
   return (
-    <CameraContext.Provider value={{ currentStop, goToStop, controlsRef }}>
+    <CameraContext.Provider value={{ currentStop, goToStop, controlsRef, modelBounds, setModelBounds }}>
       {children}
     </CameraContext.Provider>
   );

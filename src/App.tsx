@@ -10,7 +10,7 @@ export default function App() {
       </div>
       <div
         id="scroll-container"
-        style={{ height: "200vh", position: "relative", zIndex: 1, pointerEvents: "none" }}
+        style={{ height: "400vh", position: "relative", zIndex: 1, pointerEvents: "none" }}
       />
       <Nav />
     </CameraProvider>
