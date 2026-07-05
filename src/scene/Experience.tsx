@@ -1,6 +1,7 @@
 import { useRef, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Html } from "@react-three/drei";
+import { OrbitControls, Html, Environment } from "@react-three/drei";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import * as THREE from "three";
 import LoadingScreen from "./LoadingScreen";
 import { useCameraContext, CameraContext } from "./CameraContext";
@@ -27,30 +28,62 @@ function Bowl() {
   }
 
   return (
-    <mesh ref={meshRef} position={[0, 0, 0]}>
+    <mesh ref={meshRef} position={[0, 0, 0]} castShadow>
       <latheGeometry args={[points, 32]} />
       <meshStandardMaterial color="#d4693b" roughness={0.5} metalness={0.3} />
     </mesh>
   );
 }
 
-function AboutObject() {
-  const meshRef = useRef<THREE.Mesh>(null);
+function Ground() {
+  return (
+    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.2, 0]} receiveShadow>
+      <circleGeometry args={[6, 48]} />
+      <meshStandardMaterial color="#2d1a0e" roughness={0.95} />
+    </mesh>
+  );
+}
 
-  useFrame((_state, delta) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.x += delta * 0.3;
-      meshRef.current.rotation.y += delta * 0.5;
-    }
-  });
-
+function Chopsticks() {
   return (
     <group position={[-0.5, 0.3, 0]}>
-      <mesh ref={meshRef}>
-        <boxGeometry args={[0.6, 0.6, 0.6]} />
-        <meshStandardMaterial color="#e8b84b" roughness={0.4} metalness={0.1} />
+      <mesh position={[-0.08, 0.3, 0]}>
+        <cylinderGeometry args={[0.035, 0.04, 1.0, 6]} />
+        <meshStandardMaterial color="#8b6b4a" roughness={0.8} />
       </mesh>
-      <Html position={[0, 1.2, 0]} center>
+      <mesh position={[0.08, 0.3, 0]}>
+        <cylinderGeometry args={[0.035, 0.04, 1.0, 6]} />
+        <meshStandardMaterial color="#8b6b4a" roughness={0.8} />
+      </mesh>
+      <mesh position={[0, -0.25, 0]}>
+        <boxGeometry args={[0.3, 0.04, 0.12]} />
+        <meshStandardMaterial color="#5a3d2b" roughness={0.95} />
+      </mesh>
+    </group>
+  );
+}
+
+function SteamWisp() {
+  const positions: [number, number, number][] = [
+    [0, 0, 0],
+    [0.08, 0.15, 0.05],
+    [-0.06, 0.3, -0.04],
+    [0.04, 0.45, 0.02],
+  ];
+  return (
+    <group position={[-0.5, 0.5, 0]}>
+      {positions.map((pos, i) => (
+        <mesh key={i} position={pos}>
+          <sphereGeometry args={[0.12 - i * 0.02, 8, 8]} />
+          <meshStandardMaterial
+            color="#f5e6d0"
+            transparent
+            opacity={0.12 - i * 0.02}
+            roughness={0.4}
+          />
+        </mesh>
+      ))}
+      <Html position={[0, 0.7, 0]} center>
         <div
           style={{
             background: "rgba(20, 12, 8, 0.85)",
@@ -82,11 +115,27 @@ function Scene() {
   const { controlsRef } = useCameraContext();
   return (
     <>
-      <ambientLight intensity={0.3} color="#ffd6b0" />
-      <pointLight position={[5, 8, 5]} intensity={60} color="#ff9944" />
-      <pointLight position={[-4, 3, -3]} intensity={30} color="#ff6633" />
+      <fogExp2 attach="fog" args={["#1a0f0a", 0.045]} />
+      <ambientLight intensity={0.25} color="#ffd6b0" />
+      <pointLight
+        position={[5, 8, 5]}
+        intensity={60}
+        color="#ff9944"
+        castShadow
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+      />
+      <pointLight
+        position={[-4, 3, -3]}
+        intensity={30}
+        color="#ff6633"
+        castShadow
+      />
+      <Environment preset="sunset" />
+      <Ground />
       <Bowl />
-      <AboutObject />
+      <Chopsticks />
+      <SteamWisp />
       <CameraRig />
       <CameraTriggers />
       <OrbitControls
@@ -97,6 +146,14 @@ function Scene() {
         maxDistance={15}
         enableZoom={false}
       />
+      <EffectComposer>
+        <Bloom
+          intensity={0.25}
+          luminanceThreshold={0.4}
+          luminanceSmoothing={0.9}
+          mipmapBlur
+        />
+      </EffectComposer>
     </>
   );
 }
@@ -108,6 +165,7 @@ export default function Experience() {
       camera={{ position: [0, 1.5, 6], fov: 50 }}
       gl={{ antialias: true }}
       dpr={[1, 2]}
+      shadows
     >
       <CameraContext.Provider value={contextValue}>
         <color attach="background" args={["#1a0f0a"]} />
