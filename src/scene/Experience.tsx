@@ -18,14 +18,16 @@ function Bowl() {
   });
 
   const points: THREE.Vector2[] = [];
-  const segments = 16;
+  const segments = 24;
+  const maxR = 2.0;
   for (let i = 0; i <= segments; i++) {
     const t = i / segments;
-    const angle = t * Math.PI;
-    const r = Math.sin(angle) * 2.0 + 0.3;
-    const y = Math.cos(angle) * 1.2;
+    const r = Math.sin(t * Math.PI * 0.5) * maxR + 0.15;
+    const y = -1.0 + 2.0 * t;
     points.push(new THREE.Vector2(r, y));
   }
+  const last = points[points.length - 1];
+  points[points.length - 1] = new THREE.Vector2(last.x + 0.2, last.y + 0.05);
 
   return (
     <mesh ref={meshRef} position={[0, 0, 0]} castShadow>
@@ -46,7 +48,7 @@ function Ground() {
 
 function Chopsticks() {
   return (
-    <group position={[-0.5, 0.3, 0]}>
+    <group position={[3, 0.3, 0]}>
       <mesh position={[-0.08, 0.3, 0]}>
         <cylinderGeometry args={[0.035, 0.04, 1.0, 6]} />
         <meshStandardMaterial color="#8b6b4a" roughness={0.8} />
@@ -71,7 +73,7 @@ function SteamWisp() {
     [0.04, 0.45, 0.02],
   ];
   return (
-    <group position={[-0.5, 0.5, 0]}>
+    <group position={[3, 0.5, 0]}>
       {positions.map((pos, i) => (
         <mesh key={i} position={pos}>
           <sphereGeometry args={[0.12 - i * 0.02, 8, 8]} />

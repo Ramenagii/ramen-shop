@@ -8,7 +8,7 @@ export interface CameraStop {
 
 export const STOPS: Record<string, CameraStop> = {
   hero: { position: [0, 1.5, 6], target: [0, 0, 0] },
-  about: { position: [4, 2.5, 4], target: [-0.5, 0.3, 0] },
+  about: { position: [4, 2.5, 4], target: [3, 0.3, 0] },
 };
 
 interface CameraContextValue {
