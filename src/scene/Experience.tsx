@@ -42,77 +42,6 @@ function AboutOverlay() {
   );
 }
 
-function ContactOverlay() {
-  const { currentStop } = useCameraContext();
-  if (currentStop !== "contact") return null;
-
-  return (
-    <Html position={[15.718297386512695, 8.04920273453015, 0.6466230168302107]} center>
-      <div
-        style={{
-          width: 240,
-          background: "#f5f0e8",
-          color: "#1a120a",
-          padding: "20px 16px 16px",
-          borderRadius: 2,
-          fontFamily: "'Courier New', Courier, monospace",
-          fontSize: 13,
-          lineHeight: 1.6,
-          boxShadow: "4px 4px 0 rgba(0,0,0,0.25)",
-          border: "1px solid #c8bca8",
-        }}
-      >
-        <div style={{ textAlign: "center", fontWeight: 700, fontSize: 15, letterSpacing: 2, marginBottom: 12 }}>
-          ┌─ ORDER SLIP ─┐
-        </div>
-
-        <div style={{ borderTop: "1px dashed #8a7e6a", marginBottom: 10 }} />
-
-        <div style={{ marginBottom: 6 }}>
-          <span style={{ color: "#8a7e6a" }}>NAME</span><br />
-          <span style={{ letterSpacing: 1 }}>____________________</span>
-        </div>
-
-        <div style={{ marginBottom: 6 }}>
-          <span style={{ color: "#8a7e6a" }}>EMAIL</span><br />
-          <span style={{ letterSpacing: 1 }}>____________________</span>
-        </div>
-
-        <div style={{ marginBottom: 10 }}>
-          <span style={{ color: "#8a7e6a" }}>WHAT CAN I GET</span><br />
-          <span style={{ color: "#8a7e6a" }}>STARTED FOR YOU?</span><br />
-          <span style={{ letterSpacing: 1 }}>________________________</span>
-        </div>
-
-        <div style={{ borderTop: "1px dashed #8a7e6a", marginBottom: 8 }} />
-
-        <div style={{ textAlign: "right", marginBottom: 12, fontSize: 12, color: "#555" }}>
-          TOTAL: 1 NEW MESSAGE
-        </div>
-
-        <button
-          style={{
-            width: "100%",
-            padding: "8px 0",
-            background: "#d4693b",
-            color: "#fff",
-            border: "none",
-            borderRadius: 2,
-            fontFamily: "'Courier New', Courier, monospace",
-            fontSize: 13,
-            fontWeight: 700,
-            letterSpacing: 1,
-            cursor: "pointer",
-          }}
-          onClick={() => console.log("[Contact] PLACE ORDER clicked")}
-        >
-          SEND TO KITCHEN
-        </button>
-      </div>
-    </Html>
-  );
-}
-
 function CameraTriggers() {
   useScrollTriggers();
   return null;
@@ -124,6 +53,44 @@ function CameraDebug() {
     console.log("[Camera] near:", camera.near, "far:", camera.far);
   }, [camera]);
   return null;
+}
+
+function CameraLogger() {
+  const { camera } = useThree();
+  const { controlsRef } = useCameraContext();
+
+  const capture = useCallback(() => {
+    const p = camera.position;
+    const t = controlsRef.current?.target;
+    console.log("STOP CAPTURED:", {
+      position: [p.x, p.y, p.z],
+      target: t ? [t.x, t.y, t.z] : null,
+    });
+  }, [camera, controlsRef]);
+
+  return (
+    <Html fullscreen>
+      <div style={{ position: "fixed", top: 72, right: 16, zIndex: 200 }}>
+        <button
+          onClick={capture}
+          style={{
+            padding: "6px 14px",
+            background: "rgba(212, 105, 59, 0.85)",
+            color: "#fff",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontFamily: "system-ui, sans-serif",
+            fontSize: 13,
+            fontWeight: 600,
+            backdropFilter: "blur(4px)",
+          }}
+        >
+          Capture Stop
+        </button>
+      </div>
+    </Html>
+  );
 }
 
 function SurfaceCapture() {
@@ -183,9 +150,9 @@ function Scene() {
       <CameraRig />
       <CameraTriggers />
       <CameraDebug />
+      <CameraLogger />
       <SurfaceCapture />
       <AboutOverlay />
-      <ContactOverlay />
       <OrbitControls
         ref={controlsRef}
         enableDamping

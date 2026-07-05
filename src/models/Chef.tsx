@@ -36,7 +36,7 @@ export default function Chef({ position = [0, 0, 0] as [number, number, number] 
 
     setScaleY(sY);
     setScaleXZ(sXZ);
-    setHatPosY(box.max.y * sY - 0.05 * sY);
+    setHatPosY(box.max.y * sY - 0.35 * sY);
 
     console.log("[Chef] modelBounds.size[1]:", shopHeight);
     console.log("[Chef] scaleY:", sY, "scaleXZ:", sXZ);
