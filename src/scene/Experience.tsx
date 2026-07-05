@@ -7,15 +7,7 @@ import { useCameraContext, CameraContext } from "./CameraContext";
 import CameraRig from "./CameraRig";
 import useScrollTriggers from "./useScrollTriggers";
 import Bowl from "../models/Bowl";
-
-function Ground() {
-  return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.2, 0]} receiveShadow>
-      <circleGeometry args={[6, 48]} />
-      <meshStandardMaterial color="#2d1a0e" roughness={0.95} />
-    </mesh>
-  );
-}
+import Shop from "../models/Shop";
 
 function Chopsticks() {
   return (
@@ -105,7 +97,7 @@ function Scene() {
         castShadow
       />
       <Environment preset="sunset" />
-      <Ground />
+      <Shop />
       <Bowl />
       <Chopsticks />
       <SteamWisp />
