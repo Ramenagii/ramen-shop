@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useCallback } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, Html, Environment } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
@@ -7,6 +7,7 @@ import { useCameraContext, CameraContext } from "./CameraContext";
 import CameraRig from "./CameraRig";
 import useScrollTriggers from "./useScrollTriggers";
 import Shop from "../models/Shop";
+import Chef from "../models/Chef";
 
 function AboutOverlay() {
   const { modelBounds, currentStop } = useCameraContext();
@@ -53,6 +54,44 @@ function CameraDebug() {
   return null;
 }
 
+function CameraLogger() {
+  const { camera } = useThree();
+  const { controlsRef } = useCameraContext();
+
+  const capture = useCallback(() => {
+    const p = camera.position;
+    const t = controlsRef.current?.target;
+    console.log("STOP CAPTURED:", {
+      position: [p.x, p.y, p.z],
+      target: t ? [t.x, t.y, t.z] : null,
+    });
+  }, [camera, controlsRef]);
+
+  return (
+    <Html fullscreen>
+      <div style={{ position: "fixed", top: 72, right: 16, zIndex: 200 }}>
+        <button
+          onClick={capture}
+          style={{
+            padding: "6px 14px",
+            background: "rgba(212, 105, 59, 0.85)",
+            color: "#fff",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer",
+            fontFamily: "system-ui, sans-serif",
+            fontSize: 13,
+            fontWeight: 600,
+            backdropFilter: "blur(4px)",
+          }}
+        >
+          Capture Position
+        </button>
+      </div>
+    </Html>
+  );
+}
+
 function Scene() {
   const { controlsRef } = useCameraContext();
   return (
@@ -75,17 +114,19 @@ function Scene() {
       />
       <Environment preset="sunset" />
       <Shop />
+      <Chef position={[22.917892074365806, 12.712317307210997, -6.568087422942933]} />
       <CameraRig />
       <CameraTriggers />
       <CameraDebug />
+      <CameraLogger />
       <AboutOverlay />
       <OrbitControls
         ref={controlsRef}
         enableDamping
         dampingFactor={0.08}
-        minDistance={3}
-        maxDistance={15}
-        enableZoom={false}
+        minDistance={1}
+        maxDistance={50}
+        enableZoom={true}
       />
       <EffectComposer>
         <Bloom
