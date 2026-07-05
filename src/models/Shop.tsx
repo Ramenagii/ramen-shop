@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { useCameraContext } from "../scene/CameraContext";
@@ -6,7 +6,7 @@ import { useCameraContext } from "../scene/CameraContext";
 export default function Shop() {
   const { scene } = useGLTF("/models/shop-final.glb");
   const { setModelBounds } = useCameraContext();
-  const scaleRef = useRef(1);
+  const [scale, setScale] = useState(1);
 
   useEffect(() => {
     if (!scene) return;
@@ -23,7 +23,7 @@ export default function Shop() {
     box.getSize(rawSize);
     const maxDim = Math.max(rawSize.x, rawSize.y, rawSize.z);
     const scaleFactor = maxDim > 50 || maxDim < 0.5 ? 10 / maxDim : 1;
-    scaleRef.current = scaleFactor;
+    setScale(scaleFactor);
 
     const scaledMin = box.min.clone().multiplyScalar(scaleFactor);
     const scaledMax = box.max.clone().multiplyScalar(scaleFactor);
@@ -44,7 +44,7 @@ export default function Shop() {
     });
   }, [scene, setModelBounds]);
 
-  return <primitive object={scene} scale={scaleRef.current} position={[0, 0, 0]} />;
+  return <primitive object={scene} scale={scale} position={[0, 0, 0]} />;
 }
 
 useGLTF.preload("/models/shop-final.glb");
