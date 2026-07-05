@@ -1,10 +1,23 @@
-import { useEffect, useRef } from "react";
-import { Html, useProgress } from "@react-three/drei";
+import { useEffect, useRef, useState } from "react";
 import { DotLottie } from "@lottiefiles/dotlottie-web";
+import { useCameraContext } from "./CameraContext";
 
 export default function LoadingScreen() {
-  const { progress } = useProgress();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const { assetsLoaded } = useCameraContext();
+  const [show, setShow] = useState(true);
+  const [fading, setFading] = useState(false);
+  const minPassed = useRef(false);
+  const triggered = useRef(false);
+  const assetsRef = useRef(false);
+  assetsRef.current = assetsLoaded;
+
+  const doFade = () => {
+    if (triggered.current) return;
+    triggered.current = true;
+    setFading(true);
+    setTimeout(() => setShow(false), 400);
+  };
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -17,33 +30,43 @@ export default function LoadingScreen() {
     return () => dotLottie.destroy();
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      minPassed.current = true;
+      if (assetsRef.current) doFade();
+    }, 1800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (assetsLoaded && minPassed.current) doFade();
+  }, [assetsLoaded]);
+
+  if (!show) return null;
+
   return (
-    <Html center>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 12,
-        }}
-      >
-        <canvas
-          ref={canvasRef}
-          width={160}
-          height={160}
-          style={{ width: 160, height: 160 }}
-        />
-        <div
-          style={{
-            color: "#f1bb18",
-            fontFamily: "system-ui, sans-serif",
-            fontSize: "1rem",
-            letterSpacing: "0.05em",
-          }}
-        >
-          {progress.toFixed(0)}%
-        </div>
-      </div>
-    </Html>
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 500,
+        background: "#241c16",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 12,
+        opacity: fading ? 0 : 1,
+        transition: "opacity 0.4s ease",
+        pointerEvents: fading ? "none" : "auto",
+      }}
+    >
+      <canvas
+        ref={canvasRef}
+        width={160}
+        height={160}
+        style={{ width: 160, height: 160 }}
+      />
+    </div>
   );
 }
