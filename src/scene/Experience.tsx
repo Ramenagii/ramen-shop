@@ -1,41 +1,12 @@
-import { useRef, Suspense } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Html, Environment } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
-import * as THREE from "three";
 import LoadingScreen from "./LoadingScreen";
 import { useCameraContext, CameraContext } from "./CameraContext";
 import CameraRig from "./CameraRig";
 import useScrollTriggers from "./useScrollTriggers";
-
-function Bowl() {
-  const meshRef = useRef<THREE.Mesh>(null);
-
-  useFrame((_state, delta) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += delta * 0.4;
-    }
-  });
-
-  const points: THREE.Vector2[] = [];
-  const segments = 24;
-  const maxR = 2.0;
-  for (let i = 0; i <= segments; i++) {
-    const t = i / segments;
-    const r = Math.sin(t * Math.PI * 0.5) * maxR + 0.15;
-    const y = -1.0 + 2.0 * t;
-    points.push(new THREE.Vector2(r, y));
-  }
-  const last = points[points.length - 1];
-  points[points.length - 1] = new THREE.Vector2(last.x + 0.2, last.y + 0.05);
-
-  return (
-    <mesh ref={meshRef} position={[0, 0, 0]} castShadow>
-      <latheGeometry args={[points, 32]} />
-      <meshStandardMaterial color="#d4693b" roughness={0.5} metalness={0.3} />
-    </mesh>
-  );
-}
+import Bowl from "../models/Bowl";
 
 function Ground() {
   return (
