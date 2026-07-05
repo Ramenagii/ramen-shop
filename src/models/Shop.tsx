@@ -13,6 +13,13 @@ export default function Shop() {
           child.receiveShadow = true;
         }
       });
+
+      const box = new THREE.Box3().setFromObject(scene);
+      const size = new THREE.Vector3();
+      box.getSize(size);
+      console.log("[Shop] bounding box min:", box.min);
+      console.log("[Shop] bounding box max:", box.max);
+      console.log("[Shop] bounding box size:", size);
     }
   }, [scene]);
 

@@ -1,32 +1,12 @@
-import { Suspense } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Suspense, useEffect } from "react";
+import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, Html, Environment } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import LoadingScreen from "./LoadingScreen";
 import { useCameraContext, CameraContext } from "./CameraContext";
 import CameraRig from "./CameraRig";
 import useScrollTriggers from "./useScrollTriggers";
-import Bowl from "../models/Bowl";
 import Shop from "../models/Shop";
-
-function Chopsticks() {
-  return (
-    <group position={[3, 0.3, 0]}>
-      <mesh position={[-0.08, 0.3, 0]}>
-        <cylinderGeometry args={[0.035, 0.04, 1.0, 6]} />
-        <meshStandardMaterial color="#8b6b4a" roughness={0.8} />
-      </mesh>
-      <mesh position={[0.08, 0.3, 0]}>
-        <cylinderGeometry args={[0.035, 0.04, 1.0, 6]} />
-        <meshStandardMaterial color="#8b6b4a" roughness={0.8} />
-      </mesh>
-      <mesh position={[0, -0.25, 0]}>
-        <boxGeometry args={[0.3, 0.04, 0.12]} />
-        <meshStandardMaterial color="#5a3d2b" roughness={0.95} />
-      </mesh>
-    </group>
-  );
-}
 
 function SteamWisp() {
   const positions: [number, number, number][] = [
@@ -76,6 +56,14 @@ function CameraTriggers() {
   return null;
 }
 
+function CameraDebug() {
+  const { camera } = useThree();
+  useEffect(() => {
+    console.log("[Camera] near:", camera.near, "far:", camera.far);
+  }, [camera]);
+  return null;
+}
+
 function Scene() {
   const { controlsRef } = useCameraContext();
   return (
@@ -98,11 +86,10 @@ function Scene() {
       />
       <Environment preset="sunset" />
       <Shop />
-      <Bowl />
-      <Chopsticks />
       <SteamWisp />
       <CameraRig />
       <CameraTriggers />
+      <CameraDebug />
       <OrbitControls
         ref={controlsRef}
         enableDamping
