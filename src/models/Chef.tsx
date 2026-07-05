@@ -7,7 +7,8 @@ export default function Chef({ position = [0, 0, 0] as [number, number, number] 
   const { scene: penguinScene } = useGLTF("/models/penguin-final.glb");
   const { scene: hatScene } = useGLTF("/models/chef-hat-final.glb");
   const { modelBounds } = useCameraContext();
-  const [penguinScale, setPenguinScale] = useState(1);
+  const [scaleY, setScaleY] = useState(1);
+  const [scaleXZ, setScaleXZ] = useState(1);
   const [hatPosY, setHatPosY] = useState(2.5);
 
   useEffect(() => {
@@ -29,23 +30,25 @@ export default function Chef({ position = [0, 0, 0] as [number, number, number] 
     box.getSize(size);
 
     const shopHeight = modelBounds.size[1];
-    const targetHeight = shopHeight * 0.175;
-    const scale = size.y > 0 ? targetHeight / size.y : 1;
+    const targetHeight = shopHeight * 0.50;
+    const sY = size.y > 0 ? targetHeight / size.y : 1;
+    const sXZ = sY * 0.5;
 
-    setPenguinScale(scale);
-    setHatPosY(box.max.y * scale + 0.15 * scale);
+    setScaleY(sY);
+    setScaleXZ(sXZ);
+    setHatPosY(box.max.y * sY - 0.05 * sY);
 
     console.log("[Chef] modelBounds.size[1]:", shopHeight);
-    console.log("[Chef] penguin scale:", scale);
+    console.log("[Chef] scaleY:", sY, "scaleXZ:", sXZ);
   }, [penguinScene, modelBounds]);
 
   return (
     <group position={position}>
-      <primitive object={penguinScene} scale={penguinScale} />
+      <primitive object={penguinScene} scale={[scaleXZ, scaleY, scaleXZ]} />
       <primitive
         object={hatScene}
-        scale={0.27 * penguinScale}
-        position={[0, hatPosY, -0.08 * penguinScale]}
+        scale={[0.27 * scaleXZ, 0.27 * scaleY, 0.27 * scaleXZ]}
+        position={[0, hatPosY, -0.08 * scaleXZ]}
       />
     </group>
   );
