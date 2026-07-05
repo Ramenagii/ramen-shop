@@ -23,27 +23,56 @@ const STOPS: Record<string, CameraStop> = {
   },
 };
 
+const HERO = STOPS.hero;
+
+function computeIntroPosition(): [number, number, number] {
+  const dx = HERO.position[0] - HERO.target[0];
+  const dy = HERO.position[1] - HERO.target[1];
+  const dz = HERO.position[2] - HERO.target[2];
+  return [
+    HERO.target[0] + dx * 1.5,
+    HERO.target[1] + dy * 1.5,
+    HERO.target[2] + dz * 1.5,
+  ];
+}
+
 export default function CameraRig() {
   const { camera } = useThree();
-  const { currentStop, controlsRef } = useCameraContext();
+  const { currentStop, controlsRef, introComplete } = useCameraContext();
   const proxy = useRef({ x: 0, y: 0, z: 0 });
-  const target = useRef(new THREE.Vector3(0, 0, 0));
+  const vecTarget = useRef(new THREE.Vector3(0, 0, 0));
   const isTransitioning = useRef(false);
+  const snapDone = useRef(false);
+
+  useEffect(() => {
+    if (snapDone.current) return;
+    const introPos = computeIntroPosition();
+    camera.position.set(introPos[0], introPos[1], introPos[2]);
+    proxy.current = { x: HERO.target[0], y: HERO.target[1], z: HERO.target[2] };
+    vecTarget.current.set(HERO.target[0], HERO.target[1], HERO.target[2]);
+    if (controlsRef.current) {
+      controlsRef.current.target.copy(vecTarget.current);
+      controlsRef.current.update();
+    }
+    snapDone.current = true;
+  }, [camera, controlsRef]);
 
   useEffect(() => {
     const stop = STOPS[currentStop];
-    if (!stop) return;
+    if (!stop || !introComplete) return;
 
     isTransitioning.current = true;
 
     gsap.killTweensOf(camera.position);
     gsap.killTweensOf(proxy.current);
 
+    const duration = currentStop === "hero" ? 2.5 : 1.2;
+
     gsap.to(camera.position, {
       x: stop.position[0],
       y: stop.position[1],
       z: stop.position[2],
-      duration: 1.2,
+      duration,
       ease: "power2.inOut",
       overwrite: "auto",
     });
@@ -52,21 +81,21 @@ export default function CameraRig() {
       x: stop.target[0],
       y: stop.target[1],
       z: stop.target[2],
-      duration: 1.2,
+      duration,
       ease: "power2.inOut",
       overwrite: "auto",
       onComplete: () => {
         isTransitioning.current = false;
       },
     });
-  }, [currentStop, camera]);
+  }, [currentStop, camera, introComplete]);
 
   useFrame(() => {
     if (!isTransitioning.current) return;
 
-    target.current.set(proxy.current.x, proxy.current.y, proxy.current.z);
+    vecTarget.current.set(proxy.current.x, proxy.current.y, proxy.current.z);
     if (controlsRef.current) {
-      controlsRef.current.target.copy(target.current);
+      controlsRef.current.target.copy(vecTarget.current);
       controlsRef.current.update();
     }
   });

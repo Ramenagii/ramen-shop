@@ -3,7 +3,9 @@ import { useCameraContext } from "../scene/CameraContext";
 const ITEMS = ["hero", "about", "projects", "contact"];
 
 export default function Nav() {
-  const { currentStop, goToStop } = useCameraContext();
+  const { currentStop, goToStop, introComplete } = useCameraContext();
+
+  if (!introComplete) return null;
 
   return (
     <nav
