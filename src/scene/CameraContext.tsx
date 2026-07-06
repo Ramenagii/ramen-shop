@@ -22,8 +22,6 @@ interface CameraContextValue {
   setModelBounds: (bbox: BBoxInfo) => void;
   introComplete: boolean;
   setIntroComplete: (v: boolean) => void;
-  assetsLoaded: boolean;
-  setAssetsLoaded: (v: boolean) => void;
 }
 
 export const CameraContext = createContext<CameraContextValue | null>(null);
@@ -38,11 +36,10 @@ export function CameraProvider({ children }: { children: ReactNode }) {
   const [currentStop, setCurrentStop] = useState("hero");
   const [modelBounds, setModelBounds] = useState<BBoxInfo | null>(null);
   const [introComplete, setIntroComplete] = useState(false);
-  const [assetsLoaded, setAssetsLoaded] = useState(false);
   const goToStop = useCallback((stop: string) => setCurrentStop(stop), []);
   const controlsRef = useRef<OrbitControlsImpl>(null);
   return (
-    <CameraContext.Provider value={{ currentStop, goToStop, controlsRef, modelBounds, setModelBounds, introComplete, setIntroComplete, assetsLoaded, setAssetsLoaded }}>
+    <CameraContext.Provider value={{ currentStop, goToStop, controlsRef, modelBounds, setModelBounds, introComplete, setIntroComplete }}>
       {children}
     </CameraContext.Provider>
   );

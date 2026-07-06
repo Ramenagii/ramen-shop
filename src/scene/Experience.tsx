@@ -1,10 +1,11 @@
-import { Suspense, useEffect, useCallback, useRef } from "react";
+import { Suspense, useEffect, useCallback } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { OrbitControls, Html, Environment, useProgress } from "@react-three/drei";
+import { OrbitControls, Html, Environment } from "@react-three/drei";
 import * as THREE from "three";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { useCameraContext, CameraContext } from "./CameraContext";
 import CameraRig from "./CameraRig";
+import CanvasErrorBoundary from "./CanvasErrorBoundary";
 import useScrollTriggers from "./useScrollTriggers";
 import Shop from "../models/Shop";
 import Chef from "../models/Chef";
@@ -92,21 +93,6 @@ function CameraLogger() {
   );
 }
 
-function LoadingGate() {
-  const { progress } = useProgress();
-  const { setAssetsLoaded } = useCameraContext();
-  const done = useRef(false);
-
-  useEffect(() => {
-    if (progress >= 100 && !done.current) {
-      done.current = true;
-      setAssetsLoaded(true);
-    }
-  }, [progress, setAssetsLoaded]);
-
-  return null;
-}
-
 function SurfaceCapture() {
   const { camera, gl, raycaster, scene } = useThree();
   const handler = useCallback((event: PointerEvent) => {
@@ -158,11 +144,10 @@ function Scene() {
         color="#ff6633"
         castShadow
       />
-      <Environment preset="sunset" />
+      <Environment files="/hdri/venice_sunset_1k.hdr" />
       <Shop />
       <Chef position={[19.924294976753323, 0.5007008137690914, -8.975348972894503]} />
       <CameraRig />
-      <LoadingGate />
       <CameraTriggers />
       <CameraDebug />
       <CameraLogger />
@@ -191,18 +176,20 @@ function Scene() {
 export default function Experience() {
   const contextValue = useCameraContext();
   return (
-    <Canvas
-      camera={{ position: [0, 1.5, 6], fov: 50 }}
-      gl={{ antialias: true }}
-      dpr={[1, 2]}
-      shadows
-    >
-      <CameraContext.Provider value={contextValue}>
-        <color attach="background" args={["#1a0f0a"]} />
-        <Suspense fallback={null}>
-          <Scene />
-        </Suspense>
-      </CameraContext.Provider>
-    </Canvas>
+    <CanvasErrorBoundary>
+      <Canvas
+        camera={{ position: [0, 1.5, 6], fov: 50 }}
+        gl={{ antialias: true }}
+        dpr={[1, 2]}
+        shadows
+      >
+        <CameraContext.Provider value={contextValue}>
+          <color attach="background" args={["#1a0f0a"]} />
+          <Suspense fallback={null}>
+            <Scene />
+          </Suspense>
+        </CameraContext.Provider>
+      </Canvas>
+    </CanvasErrorBoundary>
   );
 }
