@@ -1,12 +1,13 @@
 import { Suspense, useEffect, useCallback } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { OrbitControls, Html, Environment } from "@react-three/drei";
+import { OrbitControls, Html, Environment, useProgress } from "@react-three/drei";
 import * as THREE from "three";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { useCameraContext, CameraContext } from "./CameraContext";
 import CameraRig from "./CameraRig";
 import CanvasErrorBoundary from "./CanvasErrorBoundary";
 import useScrollTriggers from "./useScrollTriggers";
+import { useSetIntroProgress } from "./ProgressContext";
 import Shop from "../models/Shop";
 import Chef from "../models/Chef";
 
@@ -91,6 +92,19 @@ function CameraLogger() {
       </div>
     </Html>
   );
+}
+
+/* Reports real R3F loading progress to the IntroSequence via ProgressContext.
+   Must be inside <Canvas> (and ideally outside <Suspense> so it mounts immediately). */
+function ProgressBridge() {
+  const { progress } = useProgress();
+  const setProgress = useSetIntroProgress();
+
+  useEffect(() => {
+    setProgress({ progress, done: progress >= 100 });
+  }, [progress, setProgress]);
+
+  return null;
 }
 
 function SurfaceCapture() {
@@ -185,6 +199,7 @@ export default function Experience() {
       >
         <CameraContext.Provider value={contextValue}>
           <color attach="background" args={["#1a0f0a"]} />
+          <ProgressBridge />
           <Suspense fallback={null}>
             <Scene />
           </Suspense>
