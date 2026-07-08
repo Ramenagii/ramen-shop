@@ -38,27 +38,23 @@ export default function IntroSequence() {
   const startAudio = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    if (!audio.paused) return; /* already playing */
+    if (!audio.paused) return;
 
     audio.volume = 0;
     audio.currentTime = 0;
     audio.play().then(() => {
       audioStarted.current = true;
       gsap.to(audio, { volume: 0.5, duration: 4, ease: "power2.in" });
-    }).catch(() => {
-      /* still blocked — will retry on next interaction */
+    }).catch((err) => {
+      console.warn("[Audio] play failed:", err.name, err.message);
     });
   }, []);
 
   /* Attach a single persistent listener that keeps trying until audio plays */
   useEffect(() => {
-    const handler = () => {
-      startAudio();
-    };
-
-    /* Try immediately */
     startAudio();
 
+    const handler = () => { startAudio(); };
     document.addEventListener("click", handler, true);
     document.addEventListener("keydown", handler, true);
     document.addEventListener("touchstart", handler, true);
@@ -110,6 +106,8 @@ export default function IntroSequence() {
     if (phase !== "loading") return;
     if (!ready) return;
 
+    startAudio();
+
     const el = titleRef.current;
     if (!el) return;
 
@@ -122,19 +120,13 @@ export default function IntroSequence() {
         gsap.set(el, { display: "none" });
       },
     });
-  }, [phase, ready]);
+  }, [phase, ready, startAudio]);
 
-  /* ── Phase 2: GSAP letterbox animation ── */
+  /* ── Phase 2: GSAP letterbox animation (just slides in, no auto-advance) ── */
   useEffect(() => {
     if (phase !== "letterbox") return;
 
-    const tl = gsap.timeline({
-      onComplete: () => {
-        fadeOutAudio();
-        setIntroComplete(true);
-        goToStop("hero");
-      },
-    });
+    const tl = gsap.timeline();
     tlRef.current = tl;
 
     tl.fromTo(topRef.current, { y: "-100%" }, { y: "0%", duration: 1, ease: "power3.out" })

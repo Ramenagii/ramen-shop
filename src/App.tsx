@@ -1,5 +1,6 @@
 import Experience from "./scene/Experience";
 import Nav from "./ui/Nav";
+import SectionOverlays from "./ui/SectionOverlays";
 import IntroSequence from "./scene/IntroSequence";
 import { CameraProvider, useCameraContext } from "./scene/CameraContext";
 import { ProgressProvider } from "./scene/ProgressContext";
@@ -17,6 +18,7 @@ function AppInner() {
         style={{ height: "400vh", position: "relative", zIndex: 1, pointerEvents: "none" }}
       />
       {introComplete && <Nav />}
+      {introComplete && <SectionOverlays />}
       {/* Intro overlays on top — blocks view until user enters */}
       <IntroSequence />
     </>
