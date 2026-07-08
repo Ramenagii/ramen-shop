@@ -43,6 +43,13 @@ export default function CameraRig() {
   const vecTarget = useRef(new THREE.Vector3(0, 0, 0));
   const isTransitioning = useRef(false);
   const snapDone = useRef(false);
+  const prevStop = useRef<string | null>(null);
+  const cloneAudio = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    cloneAudio.current = new Audio("/audio/clone%20sound.mp3");
+    return () => { cloneAudio.current = null; };
+  }, []);
 
   useEffect(() => {
     if (snapDone.current) return;
@@ -60,6 +67,16 @@ export default function CameraRig() {
   useEffect(() => {
     const stop = STOPS[currentStop];
     if (!stop || !introComplete) return;
+
+    /* Play clone sound on tab switch (skip initial entry) */
+    if (prevStop.current !== null && prevStop.current !== currentStop) {
+      const audio = cloneAudio.current;
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play().catch(() => {});
+      }
+    }
+    prevStop.current = currentStop;
 
     isTransitioning.current = true;
 

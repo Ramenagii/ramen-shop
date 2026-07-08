@@ -1,5 +1,5 @@
-import { Suspense, useEffect, useCallback } from "react";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Suspense, useEffect } from "react";
+import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Environment, useProgress } from "@react-three/drei";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { useCameraContext, CameraContext } from "./CameraContext";

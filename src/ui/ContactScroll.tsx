@@ -1,10 +1,8 @@
 import { useRef, useState, useEffect } from "react";
-import { useCameraContext } from "../scene/CameraContext";
-
-/* Poof sound */
-const poofAudio = typeof window !== "undefined" ? new Audio("/audio/poof.mp3") : null;
-if (poofAudio) { poofAudio.volume = 0.4; poofAudio.preload = "auto"; }
-function playPoof() { if (!poofAudio) return; poofAudio.currentTime = 0; poofAudio.play().catch(() => {}); }
+/* Clone sound */
+const cloneSfx = typeof window !== "undefined" ? new Audio("/audio/clone%20sound.mp3") : null;
+if (cloneSfx) { cloneSfx.volume = 0.4; cloneSfx.preload = "auto"; }
+function playClone() { if (!cloneSfx) return; cloneSfx.currentTime = 0; cloneSfx.play().catch(() => {}); }
 
 export default function ContactScroll({ visible }: { visible: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +17,7 @@ export default function ContactScroll({ visible }: { visible: boolean }) {
   const switchSide = (next: "info" | "form") => {
     if (next === side || switching.current) return;
     switching.current = true;
-    playPoof();
+    playClone();
     setIsOpen(false);
     setTimeout(() => {
       setSide(next);
@@ -107,7 +105,7 @@ export default function ContactScroll({ visible }: { visible: boolean }) {
 }
 
 /* Roller component */
-function Roller({ side }: { side: "left" | "right" }) {
+function Roller(_props: { side: "left" | "right" }) {
   return (
     <div style={{
       position: "relative",

@@ -1,19 +1,19 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import { useCameraContext } from "../scene/CameraContext";
 import ContactScroll from "./ContactScroll";
 
-/* ─── POOF SOUND ON TAB SWITCH ─── */
-const poofAudio = typeof window !== "undefined" ? new Audio("/audio/poof.mp3") : null;
-if (poofAudio) {
-  poofAudio.volume = 0.4;
-  poofAudio.preload = "auto";
+/* ─── CLONE SOUND ON TAB SWITCH ─── */
+const cloneSfx = typeof window !== "undefined" ? new Audio("/audio/clone%20sound.mp3") : null;
+if (cloneSfx) {
+  cloneSfx.volume = 0.4;
+  cloneSfx.preload = "auto";
 }
 
-function playPoof() {
-  if (!poofAudio) return;
-  poofAudio.currentTime = 0;
-  poofAudio.play().catch(() => {});
+function playClone() {
+  if (!cloneSfx) return;
+  cloneSfx.currentTime = 0;
+  cloneSfx.play().catch(() => {});
 }
 
 /* ─── ABOUT SECTION ─── */
@@ -403,182 +403,6 @@ function ProjectsSection({ visible }: { visible: boolean }) {
   );
 }
 
-/* ─── CONTACT SECTION — NARUTO SUMMONING SCROLL (dual-sided: info + form) ─── */
-function ContactSection({ visible }: { visible: boolean }) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const leftRollerRef = useRef<HTMLDivElement>(null);
-  const rightRollerRef = useRef<HTMLDivElement>(null);
-  const [side, setSide] = useState<"info" | "form">("info");
-  const switching = useRef(false);
-
-  const wrapperRef = useRef<HTMLDivElement>(null);
-
-  const openScroll = () => {
-    if (!scrollRef.current || !wrapperRef.current) return;
-    gsap.set(scrollRef.current, { opacity: 1 });
-    gsap.fromTo(wrapperRef.current,
-      { scaleX: 0 },
-      { scaleX: 1, duration: 0.5, ease: "power2.out" }
-    );
-  };
-
-  const closeScroll = (): Promise<void> => new Promise((resolve) => {
-    if (!wrapperRef.current) { resolve(); return; }
-    gsap.to(wrapperRef.current, { scaleX: 0, duration: 0.3, ease: "power2.in", onComplete: resolve });
-  });
-
-  useEffect(() => {
-    if (!scrollRef.current) return;
-    if (visible) { openScroll(); }
-    else { gsap.to(scrollRef.current, { opacity: 0, duration: 0.25 }); }
-  }, [visible]);
-
-  const switchSide = async (next: "info" | "form") => {
-    if (next === side || switching.current) return;
-    switching.current = true;
-    playPoof();
-    await closeScroll();
-    setSide(next);
-    requestAnimationFrame(() => { openScroll(); switching.current = false; });
-  };
-
-  return (
-    <div ref={scrollRef} style={{
-      position: "fixed", inset: 0, zIndex: 50,
-      display: "flex", alignItems: "center", justifyContent: "center",
-      pointerEvents: visible ? "auto" : "none", opacity: 0, padding: "16px",
-    }}>
-      <div ref={wrapperRef} style={{ display: "flex", alignItems: "stretch", maxWidth: 660, width: "min(90vw, 660px)", transformOrigin: "center center", willChange: "transform" }}>
-        {/* LEFT ROLLER */}
-        <div ref={leftRollerRef} style={{
-          width: "clamp(36px, 5vw, 50px)", background: "#3d5c4a",
-          borderRadius: "50% 0 0 50%", display: "flex", flexDirection: "column",
-          alignItems: "center", justifyContent: "center", position: "relative",
-          zIndex: 2, flexShrink: 0, boxShadow: "3px 0 10px rgba(0,0,0,0.4)",
-        }}>
-          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "11%", background: "#6b3e26", borderRadius: "50% 0 0 0" }} />
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "11%", background: "#6b3e26", borderRadius: "0 0 0 50%" }} />
-          <div style={{ position: "absolute", top: "11%", left: 3, right: 3, height: 2, background: "#c9a84c" }} />
-          <div style={{ position: "absolute", top: "calc(11% + 3px)", left: 3, right: 3, height: 2, background: "#c83020" }} />
-          <div style={{ position: "absolute", bottom: "11%", left: 3, right: 3, height: 2, background: "#c9a84c" }} />
-          <div style={{ position: "absolute", bottom: "calc(11% + 3px)", left: 3, right: 3, height: 2, background: "#c83020" }} />
-          <div style={{ position: "absolute", top: -5, left: "50%", transform: "translateX(-50%)", width: 24, height: 12, background: "#1a1a1a", borderRadius: "50%" }} />
-          <div style={{ position: "absolute", bottom: -5, left: "50%", transform: "translateX(-50%)", width: 24, height: 12, background: "#1a1a1a", borderRadius: "50%" }} />
-          <div style={{ writingMode: "vertical-rl", fontFamily: "'Noto Serif JP', serif", fontSize: "clamp(11px, 1.3vw, 15px)", fontWeight: 900, color: "#f5e6c8", textShadow: "1px 1px 2px rgba(0,0,0,0.7)", letterSpacing: "0.3em" }}>連絡</div>
-        </div>
-
-        {/* SCROLL BODY */}
-        <div ref={contentRef} style={{
-          overflow: "hidden", background: "#c8b88a", position: "relative",
-          minHeight: "clamp(320px, 45vh, 420px)", display: "flex", flexDirection: "column",
-          width: "100%", boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
-          transformOrigin: "center center", willChange: "transform",
-        }}>
-          {/* TOP BORDER + TABS */}
-          <div style={{ minHeight: 32, background: "#3d5c4a", display: "flex", alignItems: "flex-end", padding: "0 10px", gap: 2, borderBottom: "2px solid #2a4436" }}>
-            <button onClick={() => switchSide("info")} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "clamp(8px, 1vw, 10px)", letterSpacing: "0.1em", textTransform: "uppercase", padding: "4px 12px", border: "none", borderRadius: "3px 3px 0 0", cursor: "pointer", background: side === "info" ? "#f5ecd4" : "transparent", color: side === "info" ? "#2a1810" : "rgba(245,230,200,0.5)", fontWeight: side === "info" ? 700 : 400 }}>📜 Info</button>
-            <button onClick={() => switchSide("form")} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "clamp(8px, 1vw, 10px)", letterSpacing: "0.1em", textTransform: "uppercase", padding: "4px 12px", border: "none", borderRadius: "3px 3px 0 0", cursor: "pointer", background: side === "form" ? "#f5ecd4" : "transparent", color: side === "form" ? "#2a1810" : "rgba(245,230,200,0.5)", fontWeight: side === "form" ? 700 : 400 }}>✉ Message</button>
-            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6, paddingBottom: 5 }}>
-              {["🐸", "〰", "🐸", "〰", "🐸"].map((e, i) => <span key={i} style={{ fontSize: 10, opacity: 0.7 }}>{e}</span>)}
-            </div>
-          </div>
-
-          {/* PARCHMENT */}
-          <div style={{ flex: 1, margin: "0 8px", background: "#f5ecd4", display: "flex", flexDirection: "column", justifyContent: "center", padding: "clamp(16px, 2.5vw, 28px) clamp(16px, 3vw, 32px)", position: "relative", overflow: "hidden" }}>
-            <div style={{ position: "absolute", inset: 0, opacity: 0.02, pointerEvents: "none", backgroundImage: "repeating-linear-gradient(0deg, #000 0px, transparent 1px, transparent 20px)" }} />
-            {side === "info" ? <ScrollInfoSide /> : <ScrollFormSide />}
-          </div>
-
-          {/* BOTTOM BORDER */}
-          <div style={{ minHeight: 32, background: "#3d5c4a", display: "flex", alignItems: "center", justifyContent: "space-evenly", padding: "0 12px", borderTop: "2px solid #2a4436" }}>
-            {["🐸", "〰", "🐸", "〰", "🐸", "〰", "🐸"].map((e, i) => <span key={i} style={{ fontSize: 11, opacity: 0.7 }}>{e}</span>)}
-          </div>
-
-          {/* Right edge kanji */}
-          <div style={{ position: "absolute", right: 12, top: 38, bottom: 38, writingMode: "vertical-rl", fontFamily: "'Noto Serif JP', serif", fontSize: 10, fontWeight: 700, color: "rgba(42,24,16,0.1)", letterSpacing: "0.3em", display: "flex", alignItems: "center", pointerEvents: "none" }}>史上最強口寄せ忍蝦募契約書</div>
-        </div>
-
-        {/* RIGHT ROLLER */}
-        <div ref={rightRollerRef} style={{
-          width: "clamp(36px, 5vw, 50px)", background: "#3d5c4a",
-          borderRadius: "0 50% 50% 0", display: "flex", flexDirection: "column",
-          alignItems: "center", justifyContent: "center", position: "relative",
-          zIndex: 2, flexShrink: 0, boxShadow: "-3px 0 10px rgba(0,0,0,0.4)",
-        }}>
-          <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "11%", background: "#6b3e26", borderRadius: "0 50% 0 0" }} />
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "11%", background: "#6b3e26", borderRadius: "0 0 50% 0" }} />
-          <div style={{ position: "absolute", top: "11%", left: 3, right: 3, height: 2, background: "#c9a84c" }} />
-          <div style={{ position: "absolute", top: "calc(11% + 3px)", left: 3, right: 3, height: 2, background: "#c83020" }} />
-          <div style={{ position: "absolute", bottom: "11%", left: 3, right: 3, height: 2, background: "#c9a84c" }} />
-          <div style={{ position: "absolute", bottom: "calc(11% + 3px)", left: 3, right: 3, height: 2, background: "#c83020" }} />
-          <div style={{ position: "absolute", top: -5, left: "50%", transform: "translateX(-50%)", width: 24, height: 12, background: "#1a1a1a", borderRadius: "50%" }} />
-          <div style={{ position: "absolute", bottom: -5, left: "50%", transform: "translateX(-50%)", width: 24, height: 12, background: "#1a1a1a", borderRadius: "50%" }} />
-          <div style={{ writingMode: "vertical-rl", fontFamily: "'Noto Serif JP', serif", fontSize: "clamp(11px, 1.3vw, 15px)", fontWeight: 900, color: "#f5e6c8", textShadow: "1px 1px 2px rgba(0,0,0,0.7)", letterSpacing: "0.3em" }}>契約</div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Info side of the scroll ─── */
-function ScrollInfoSide() {
-  return (
-    <>
-      <div data-scroll-item style={{ fontFamily: "'Noto Serif JP', serif", fontSize: "clamp(18px, 2.5vw, 22px)", fontWeight: 900, color: "#2a1810", marginBottom: 4 }}>召喚の契約書</div>
-      <div data-scroll-item style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "clamp(8px, 1vw, 10px)", letterSpacing: "0.2em", textTransform: "uppercase", color: "#8b5e3c", marginBottom: 18 }}>Summoning Contract — My Info</div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {[
-          { label: "GitHub", value: "github.com/ramenagii", href: "https://github.com/ramenagii", icon: "⟁" },
-          { label: "Email", value: "justinlorenzo@email.com", href: "mailto:justinlorenzo@email.com", icon: "✉" },
-          { label: "LinkedIn", value: "Justin Lorenzo", href: "https://linkedin.com", icon: "◈" },
-        ].map(link => (
-          <a key={link.label} href={link.href} target="_blank" rel="noopener noreferrer" data-scroll-item style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", padding: "8px 12px", borderRadius: 5, border: "1px solid rgba(107,76,59,0.15)", background: "rgba(245,225,190,0.4)" }}>
-            <span style={{ fontSize: 14, color: "#6b4c3b" }}>{link.icon}</span>
-            <div>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, letterSpacing: "0.2em", textTransform: "uppercase", color: "#8b5e3c" }}>{link.label}</div>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#2a1810", marginTop: 1 }}>{link.value}</div>
-            </div>
-          </a>
-        ))}
-      </div>
-      <div data-scroll-item style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 8 }}>
-        <div style={{ width: 26, height: 26, border: "2px solid #c83020", borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Noto Serif JP', serif", fontSize: 10, fontWeight: 900, color: "#c83020", transform: "rotate(-5deg)" }}>忍</div>
-        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: "#8b5e3c", letterSpacing: "0.1em" }}>Signed by ramenagii · 2025</div>
-      </div>
-    </>
-  );
-}
-
-/* ─── Form side of the scroll ─── */
-function ScrollFormSide() {
-  return (
-    <>
-      <div data-scroll-item style={{ fontFamily: "'Noto Serif JP', serif", fontSize: "clamp(18px, 2.5vw, 22px)", fontWeight: 900, color: "#2a1810", marginBottom: 4 }}>伝書の術</div>
-      <div data-scroll-item style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "clamp(8px, 1vw, 10px)", letterSpacing: "0.2em", textTransform: "uppercase", color: "#8b5e3c", marginBottom: 18 }}>Message Jutsu — Send Me a Scroll</div>
-      <form data-scroll-item onSubmit={(e) => { e.preventDefault(); alert("Scroll sent! 📜"); }} style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <input type="text" placeholder="Your Name" required style={scrollInput} />
-          <input type="email" placeholder="Your Email" required style={scrollInput} />
-        </div>
-        <input type="text" placeholder="Subject" style={scrollInput} />
-        <textarea placeholder="Write your message here..." rows={3} required style={{ ...scrollInput, resize: "vertical", minHeight: 60 }} />
-        <button type="submit" style={{ alignSelf: "flex-start", fontFamily: "'JetBrains Mono', monospace", fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", padding: "8px 18px", background: "#3d5c4a", color: "#f5ecd4", border: "none", borderRadius: 4, cursor: "pointer", fontWeight: 600 }}>✦ Send Scroll</button>
-      </form>
-      <div data-scroll-item style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8 }}>
-        <div style={{ width: 26, height: 26, border: "2px solid #c83020", borderRadius: 3, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Noto Serif JP', serif", fontSize: 10, fontWeight: 900, color: "#c83020", transform: "rotate(-5deg)" }}>忍</div>
-        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: "#8b5e3c", letterSpacing: "0.1em" }}>Awaiting your response...</div>
-      </div>
-    </>
-  );
-}
-
-const scrollInput: React.CSSProperties = {
-  flex: "1 1 120px", fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
-  padding: "8px 11px", background: "rgba(245,230,200,0.5)",
-  border: "1px solid rgba(107,76,59,0.18)", borderRadius: 4, color: "#2a1810", outline: "none",
-};
-
 /* ─── MAIN EXPORT ─── */
 export default function SectionOverlays() {
   const { currentStop, introComplete } = useCameraContext();
@@ -588,7 +412,7 @@ export default function SectionOverlays() {
   useEffect(() => {
     if (!introComplete) return;
     if (currentStop !== prevStop.current) {
-      playPoof();
+      playClone();
       prevStop.current = currentStop;
     }
   }, [currentStop, introComplete]);
