@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- Japanese hashi (chopsticks) - resting/open position -->
+  <!-- Left chopstick - tapered wooden style -->
+  <line x1="4" y1="1" x2="12" y2="31" stroke="#8B5E3C" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="4" y1="1" x2="12" y2="31" stroke="#D4A574" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+  <!-- Right chopstick -->
+  <line x1="9" y1="1" x2="17" y2="31" stroke="#6B3E26" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="9" y1="1" x2="17" y2="31" stroke="#C49A6C" stroke-width="0.8" stroke-linecap="round" opacity="0.4"/>
+  <!-- Subtle tip detail -->
+  <circle cx="12" cy="30" r="0.8" fill="#5C3317" opacity="0.6"/>
+  <circle cx="17" cy="30" r="0.8" fill="#5C3317" opacity="0.6"/>
+</svg>

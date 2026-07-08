@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- Japanese hashi (chopsticks) - pinching/hover position -->
+  <!-- Left chopstick - angled inward (pinching) -->
+  <line x1="5" y1="1" x2="14" y2="29" stroke="#8B5E3C" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="5" y1="1" x2="14" y2="29" stroke="#D4A574" stroke-width="0.8" stroke-linecap="round" opacity="0.5"/>
+  <!-- Right chopstick - angled inward (pinching) -->
+  <line x1="9" y1="1" x2="15" y2="29" stroke="#6B3E26" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="9" y1="1" x2="15" y2="29" stroke="#C49A6C" stroke-width="0.8" stroke-linecap="round" opacity="0.4"/>
+  <!-- Pinch point where tips meet -->
+  <circle cx="14.5" cy="29" r="1.2" fill="none" stroke="#D4A574" stroke-width="0.6" opacity="0.5"/>
+</svg>

@@ -1,13 +1,14 @@
 import Experience from "./scene/Experience";
 import Nav from "./ui/Nav";
 import IntroSequence from "./scene/IntroSequence";
-import { CameraProvider } from "./scene/CameraContext";
+import { CameraProvider, useCameraContext } from "./scene/CameraContext";
 import { ProgressProvider } from "./scene/ProgressContext";
 
-export default function App() {
+function AppInner() {
+  const { introComplete } = useCameraContext();
   return (
-    <ProgressProvider>
-    <CameraProvider>
+    <>
+      {/* 3D canvas renders in background during intro so it's fully loaded when entering */}
       <div style={{ position: "fixed", inset: 0, zIndex: 0 }}>
         <Experience />
       </div>
@@ -15,9 +16,19 @@ export default function App() {
         id="scroll-container"
         style={{ height: "400vh", position: "relative", zIndex: 1, pointerEvents: "none" }}
       />
-      <Nav />
+      {introComplete && <Nav />}
+      {/* Intro overlays on top — blocks view until user enters */}
       <IntroSequence />
-    </CameraProvider>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <ProgressProvider>
+      <CameraProvider>
+        <AppInner />
+      </CameraProvider>
     </ProgressProvider>
   );
 }

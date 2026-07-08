@@ -6,6 +6,7 @@
 
 html {
   height: 100%;
+  cursor: url('/cursors/chopsticks.svg') 8 2, auto;
 }
 
 body {
@@ -16,4 +17,9 @@ body {
 
 #root {
   min-height: 100%;
+}
+
+/* Chopstick cursor for interactive elements */
+a, button, [role="button"], input[type="submit"], select, label[for] {
+  cursor: url('/cursors/chopsticks-pointer.svg') 10 28, pointer;
 }
