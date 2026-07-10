@@ -155,13 +155,21 @@ function HeroSection({ visible }: { visible: boolean }) {
 /* ─── ABOUT SECTION ─── */
 function AboutSection({ visible }: { visible: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
+  const [counters, setCounters] = useState({ years: 0, projects: 0 });
 
   useEffect(() => {
     if (!ref.current) return;
     if (visible) {
       gsap.fromTo(ref.current, { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" });
+      const obj = { years: 0, projects: 0 };
+      gsap.to(obj, {
+        years: 3, projects: 10,
+        duration: 1.2, ease: "power3.out", delay: 0.4,
+        onUpdate: () => setCounters({ years: Math.round(obj.years), projects: Math.round(obj.projects) }),
+      });
     } else {
       gsap.to(ref.current, { opacity: 0, x: -40, duration: 0.4, ease: "power2.in" });
+      setCounters({ years: 0, projects: 0 });
     }
   }, [visible]);
 
@@ -289,12 +297,12 @@ function AboutSection({ visible }: { visible: boolean }) {
           margin: "0 0 20px 0",
         }} />
 
-        {/* Stats row */}
+        {/* Stats row — animated shinobi record */}
         <div style={{ display: "flex", gap: 32, marginBottom: 24 }}>
           {[
-            { value: "3+", label: "Years Coding" },
-            { value: "10+", label: "Projects" },
-            { value: "∞", label: "Ramen Eaten" },
+            { value: counters.years, label: "Years Coding", suffix: "+" },
+            { value: counters.projects, label: "Projects", suffix: "+" },
+            { value: "∞", label: "Ramen Eaten", suffix: "" },
           ].map(stat => (
             <div key={stat.label}>
               <div style={{
@@ -303,7 +311,7 @@ function AboutSection({ visible }: { visible: boolean }) {
                 fontWeight: 900,
                 color: "#c83020",
               }}>
-                {stat.value}
+                {stat.value}{stat.suffix}
               </div>
               <div style={{
                 fontFamily: "'JetBrains Mono', monospace",
@@ -319,7 +327,7 @@ function AboutSection({ visible }: { visible: boolean }) {
           ))}
         </div>
 
-        {/* Skills */}
+        {/* Skills — Jutsu proficiency bars */}
         <div style={{
           fontFamily: "'JetBrains Mono', monospace",
           fontSize: 9,
@@ -330,22 +338,84 @@ function AboutSection({ visible }: { visible: boolean }) {
         }}>
           Jutsu (Skills)
         </div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {["React", "Three.js", "TypeScript", "GSAP", "Node.js", "Figma", "Next.js", "TailwindCSS"].map(skill => (
-            <span key={skill} style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: 10,
-              letterSpacing: "0.08em",
-              color: "rgba(255, 220, 180, 0.6)",
-              background: "rgba(200, 50, 30, 0.08)",
-              border: "1px solid rgba(200, 80, 40, 0.15)",
-              borderRadius: 4,
-              padding: "5px 12px",
-            }}>
-              {skill}
-            </span>
-          ))}
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          {[
+            { name: "React", kanji: "火", value: 95 },
+            { name: "TypeScript", kanji: "火", value: 90 },
+            { name: "JavaScript", kanji: "炎", value: 85 },
+            { name: "Vite", kanji: "風", value: 88 },
+            { name: "Tailwind CSS", kanji: "風", value: 82 },
+            { name: "R3F / Three.js", kanji: "雷", value: 80 },
+            { name: "GSAP", kanji: "雷", value: 78 },
+            { name: "Node.js", kanji: "水", value: 75 },
+            { name: "Next.js", kanji: "水", value: 72 },
+            { name: "Laravel", kanji: "水", value: 65 },
+            { name: "Docker", kanji: "土", value: 60 },
+            { name: "Supabase", kanji: "土", value: 55 },
+          ].map(skill => <SkillBar key={skill.name} skill={skill} visible={visible} />)}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── SKILL BAR — animated jutsu proficiency, reused in About ─── */
+function SkillBar({ skill, visible }: { skill: { name: string; kanji: string; value: number }; visible: boolean }) {
+  const fillRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!fillRef.current) return;
+    if (visible) {
+      gsap.fromTo(fillRef.current, { width: "0%" }, { width: `${skill.value}%`, duration: 0.8, ease: "power3.out", delay: 0.3 });
+    } else {
+      gsap.set(fillRef.current, { width: "0%" });
+    }
+  }, [visible, skill.value]);
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <div style={{
+        fontFamily: "'Noto Serif JP', serif",
+        fontSize: 11,
+        fontWeight: 700,
+        color: "rgba(250, 200, 150, 0.5)",
+        width: 16,
+        textAlign: "center",
+        flexShrink: 0,
+      }}>
+        {skill.kanji}
+      </div>
+      <div style={{
+        fontFamily: "'JetBrains Mono', monospace",
+        fontSize: 9,
+        color: "rgba(255, 220, 180, 0.5)",
+        width: 100,
+        flexShrink: 0,
+      }}>
+        {skill.name}
+      </div>
+      <div style={{
+        flex: 1,
+        height: 6,
+        background: "rgba(255, 255, 255, 0.06)",
+        borderRadius: 999,
+        overflow: "hidden",
+      }}>
+        <div ref={fillRef} style={{
+          height: "100%",
+          background: "linear-gradient(90deg, #c83020, #ff6040)",
+          borderRadius: 999,
+          boxShadow: "0 0 8px rgba(200, 50, 30, 0.6)",
+          width: "0%",
+        }} />
+      </div>
+      <div style={{
+        fontFamily: "'JetBrains Mono', monospace",
+        fontSize: 9,
+        color: "rgba(250, 200, 150, 0.45)",
+        width: 26,
+        textAlign: "right",
+        flexShrink: 0,
+      }}>
+        {skill.value}
       </div>
     </div>
   );
