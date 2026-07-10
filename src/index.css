@@ -23,3 +23,24 @@ body {
 a, button, [role="button"], input[type="submit"], select, label[for] {
   cursor: url('/cursors/chopsticks-pointer.svg') 10 28, pointer;
 }
+
+/* Mission roster horizontal scroller — themed scrollbar */
+.mission-scroller::-webkit-scrollbar {
+  height: 6px;
+}
+.mission-scroller::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+}
+.mission-scroller::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #8b5e3c, #c9a468);
+  border-radius: 999px;
+  box-shadow: 0 0 6px rgba(201, 164, 104, 0.4);
+}
+.mission-scroller::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #a06d44, #d9bd8c);
+}
+.mission-scroller {
+  scrollbar-width: thin;
+  scrollbar-color: #c9a468 transparent;
+}

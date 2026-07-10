@@ -9,9 +9,13 @@ const keyframes = `
   50% { opacity: 0.3; }
 }
 @keyframes pulse {
-  0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 12px rgba(200, 50, 30, 0.3); }
-  50% { transform: translate(-50%, -50%) scale(1.03); box-shadow: 0 0 24px rgba(200, 50, 30, 0.6); }
-  100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 12px rgba(200, 50, 30, 0.3); }
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+@keyframes swing {
+  0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+  25% { transform: translate(-50%, -50%) rotate(1.5deg); }
+  75% { transform: translate(-50%, -50%) rotate(-1.5deg); }
 }
 `;
 
@@ -372,33 +376,106 @@ export default function IntroSequence() {
         </div>
       )}
 
-      {/* ── Phase 2: letterbox + Enter ── */}
+      {/* ── Phase 2: letterbox + Wooden Sign Enter ── */}
       {phase === "letterbox" && (
         <>
           <div ref={topRef} style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "8vh", background: "#000" }} />
           <div ref={bottomRef} style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: "8vh", background: "#000" }} />
-          <button
+
+          {/* Wooden sign button */}
+          <div
             ref={btnRef}
             onClick={handleEnter}
             style={{
               position: "absolute", top: "50%", left: "50%",
-              padding: "12px 40px",
-              background: "linear-gradient(135deg, #c83020, #ff4030)",
-              color: "#fff",
-              border: "1px solid rgba(255, 80, 60, 0.3)",
-              borderRadius: 8,
-              cursor: "pointer",
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: 14,
-              fontWeight: 600,
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              opacity: 0,
-              animation: "pulse 2.5s ease-in-out infinite",
+              transform: "translate(-50%, -50%)",
+              display: "flex", flexDirection: "column", alignItems: "center",
+              cursor: "pointer", opacity: 0,
+              animation: "swing 4s ease-in-out infinite",
+              transformOrigin: "top center",
             }}
           >
-            Enter
-          </button>
+            {/* Rope/chain holding the sign */}
+            <div style={{
+              width: 2, height: 28,
+              background: "linear-gradient(180deg, rgba(139,94,60,0.2), #8b5e3c, #6b3e26)",
+              borderRadius: 1,
+            }} />
+
+            {/* The wooden board */}
+            <div style={{
+              position: "relative",
+              padding: "20px 28px",
+              background: "linear-gradient(180deg, #5c3a22 0%, #3d2816 40%, #2a1a10 100%)",
+              borderRadius: 6,
+              border: "2px solid #1a0f08",
+              boxShadow: `
+                0 8px 24px rgba(0,0,0,0.6),
+                0 2px 8px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,200,150,0.08),
+                inset 0 -1px 0 rgba(0,0,0,0.3)
+              `,
+              display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
+              transition: "transform 0.15s ease, box-shadow 0.15s ease",
+              /* Wood grain texture */
+              backgroundImage: `
+                linear-gradient(180deg, #5c3a22 0%, #3d2816 40%, #2a1a10 100%),
+                repeating-linear-gradient(90deg, transparent 0px, transparent 6px, rgba(0,0,0,0.04) 6px, transparent 8px)
+              `,
+            }}>
+              {/* Inner border (carved edge look) */}
+              <div style={{
+                position: "absolute", inset: 4,
+                border: "1px solid rgba(139,94,60,0.15)",
+                borderRadius: 3,
+                pointerEvents: "none",
+              }} />
+
+              {/* Main kanji */}
+              <div style={{
+                fontFamily: "'Noto Serif JP', serif",
+                fontSize: 28,
+                fontWeight: 900,
+                color: "#f5e6c8",
+                textShadow: "0 1px 2px rgba(0,0,0,0.5), 0 0 20px rgba(200,100,40,0.15)",
+                lineHeight: 1,
+              }}>
+                営業中
+              </div>
+
+              {/* Subtitle */}
+              <div style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 8,
+                letterSpacing: "0.25em",
+                textTransform: "uppercase",
+                color: "rgba(201,164,104,0.6)",
+              }}>
+                open
+              </div>
+
+              {/* Warm glow behind */}
+              <div style={{
+                position: "absolute",
+                top: "50%", left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: 120, height: 80,
+                background: "radial-gradient(ellipse, rgba(255,140,40,0.08) 0%, transparent 70%)",
+                pointerEvents: "none",
+                animation: "pulse 3s ease-in-out infinite",
+              }} />
+            </div>
+
+            {/* Bottom rope knot */}
+            <div style={{
+              width: 6, height: 6,
+              background: "#6b3e26",
+              borderRadius: "50%",
+              marginTop: -1,
+              boxShadow: "0 2px 4px rgba(0,0,0,0.4)",
+            }} />
+          </div>
+
           <button
             ref={skipRef}
             onClick={handleSkip}
