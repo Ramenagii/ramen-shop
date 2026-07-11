@@ -153,8 +153,34 @@ function HeroSection({ visible }: { visible: boolean }) {
 }
 
 /* ─── ABOUT SECTION ─── */
+const aboutSkills = [
+  // Frontend
+  { name: "React", icon: "react" },
+  { name: "JavaScript", icon: "js" },
+  { name: "TypeScript", icon: "ts" },
+  { name: "Tailwind", icon: "tailwind" },
+  { name: "Vite", icon: "vite" },
+  { name: "Framer Motion", icon: "framer" },
+  { name: "GSAP", icon: "gsap" },
+  { name: "Three.js", icon: "threejs" },
+  { name: "D3.js", icon: "d3" },
+  // Backend
+  { name: "Python", icon: "python" },
+  { name: "Node.js", icon: "nodejs" },
+  { name: "PHP", icon: "php" },
+  { name: "Laravel", icon: "laravel" },
+  // Database
+  { name: "SQLite", icon: "sqlite" },
+  { name: "MySQL", icon: "mysql" },
+  { name: "Supabase", icon: "supabase" },
+  // Tools
+  { name: "Next.js", icon: "nextjs" },
+  { name: "Docker", icon: "docker" },
+];
+
 function AboutSection({ visible }: { visible: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [counters, setCounters] = useState({ years: 0, projects: 0 });
 
   useEffect(() => {
@@ -163,7 +189,7 @@ function AboutSection({ visible }: { visible: boolean }) {
       gsap.fromTo(ref.current, { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" });
       const obj = { years: 0, projects: 0 };
       gsap.to(obj, {
-        years: 3, projects: 10,
+        years: 3, projects: 14,
         duration: 1.2, ease: "power3.out", delay: 0.4,
         onUpdate: () => setCounters({ years: Math.round(obj.years), projects: Math.round(obj.projects) }),
       });
@@ -172,6 +198,39 @@ function AboutSection({ visible }: { visible: boolean }) {
       setCounters({ years: 0, projects: 0 });
     }
   }, [visible]);
+
+  // Smooth scroll with lerp
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const state = { target: 0, current: 0, raf: 0 as unknown as ReturnType<typeof requestAnimationFrame> };
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      state.target = Math.max(0, Math.min(el.scrollHeight - el.clientHeight, state.target + e.deltaY));
+      if (!state.raf) {
+        const tick = () => {
+          state.current += (state.target - state.current) * 0.12;
+          if (Math.abs(state.current - state.target) < 0.5) state.current = state.target;
+          el.scrollTop = Math.round(state.current);
+          state.raf = state.current !== state.target ? requestAnimationFrame(tick) : 0;
+        };
+        state.raf = requestAnimationFrame(tick);
+      }
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      el.removeEventListener("wheel", onWheel);
+      if (state.raf) cancelAnimationFrame(state.raf);
+    };
+  }, []);
+
+  const journey = [
+    { year: "2026", title: "B.S. Computer Engineering", sub: "Polytechnic University of the Philippines", accent: true },
+    { year: "2025", title: "CliqueHa Information Services OPC", sub: "Platform work · GoHighLevel · AutoCAD support", accent: false },
+    { year: "2025", title: "Pharmacy POS System", sub: "EljonPharmacy — React + Supabase", accent: false },
+    { year: "2024", title: "DSA Case Studies App", sub: "React + Framer Motion + D3.js + Three.js", accent: false },
+    { year: "2023", title: "Started Coding", sub: "Self-taught · React · JavaScript", accent: false },
+  ];
 
   return (
     <div
@@ -182,7 +241,7 @@ function AboutSection({ visible }: { visible: boolean }) {
         left: 0,
         bottom: 0,
         width: "45vw",
-        minWidth: 400,
+        minWidth: 440,
         zIndex: 50,
         display: "flex",
         alignItems: "center",
@@ -192,230 +251,177 @@ function AboutSection({ visible }: { visible: boolean }) {
       }}
     >
       <div style={{
-        background: "rgba(10, 6, 4, 0.92)",
+        background: "rgba(12, 8, 6, 0.94)",
         backdropFilter: "blur(16px)",
-        border: "1px solid rgba(200, 50, 30, 0.12)",
+        border: "1px solid rgba(160, 120, 80, 0.12)",
         borderRadius: 16,
-        padding: "48px 52px",
         width: "100%",
         position: "relative",
         overflow: "hidden",
       }}>
-        {/* Decorative kanji watermark */}
+        <style>{`@keyframes techMarquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}.about-scroll::-webkit-scrollbar{display:none}`}</style>
+
+        {/* Watermark */}
         <div style={{
-          position: "absolute",
-          top: -20,
-          right: -10,
-          fontSize: 180,
-          fontFamily: "'Noto Serif JP', serif",
-          fontWeight: 900,
-          color: "rgba(200, 50, 30, 0.04)",
-          lineHeight: 1,
-          pointerEvents: "none",
-          userSelect: "none",
+          position: "absolute", top: -10, right: -10,
+          fontSize: 160, fontFamily: "'Noto Serif JP', serif", fontWeight: 900,
+          color: "rgba(180, 120, 80, 0.04)", lineHeight: 1,
+          pointerEvents: "none", userSelect: "none",
         }}>
           忍
         </div>
 
-        {/* Top accent line */}
+        {/* Accent line */}
         <div style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 3,
-          background: "linear-gradient(90deg, #c83020, #ff6040, transparent)",
+          position: "absolute", top: 0, left: 0, right: 0, height: 3,
+          background: "linear-gradient(90deg, #c9a468, #a67c52, transparent)",
         }} />
 
-        {/* Section label */}
-        <div style={{
-          fontSize: 10,
-          letterSpacing: "0.5em",
-          textTransform: "uppercase",
-          color: "#c83020",
-          marginBottom: 8,
-          fontFamily: "'JetBrains Mono', monospace",
+        {/* Scrollable content */}
+        <div ref={scrollRef} className="about-scroll" style={{
+          overflowY: "auto", maxHeight: 520,
+          scrollbarWidth: "none", msOverflowStyle: "none",
+          padding: "40px 44px",
         }}>
-          ── About
-        </div>
-
-        {/* Profile pic + name row */}
-        <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 24 }}>
           <div style={{
-            width: 72,
-            height: 72,
-            borderRadius: "50%",
-            overflow: "hidden",
-            border: "2px solid rgba(200, 80, 40, 0.3)",
-            flexShrink: 0,
+            fontSize: 10, letterSpacing: "0.5em", textTransform: "uppercase",
+            color: "#c9a468", marginBottom: 14,
+            fontFamily: "'JetBrains Mono', monospace",
           }}>
-            <img src="/images/pfp.png" alt="Justin" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            ── About
           </div>
-          <div>
-            <h2 style={{
-              fontFamily: "'Noto Serif JP', serif",
-              fontSize: 32,
-              fontWeight: 900,
-              color: "#fff",
-              margin: 0,
-              lineHeight: 1.1,
-            }}>
-              Justin Lorenzo
-            </h2>
-            <div style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: 11,
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              color: "rgba(250, 180, 120, 0.6)",
-              marginTop: 4,
-            }}>
-              Full-Stack Developer
-            </div>
+          <h2 style={{
+            fontFamily: "'Noto Serif JP', serif", fontSize: 26, fontWeight: 900,
+            color: "#f5f0eb", margin: "0 0 2px 0", lineHeight: 1.1,
+          }}>
+            Justin Lorenzo
+          </h2>
+          <div style={{
+            fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
+            letterSpacing: "0.2em", textTransform: "uppercase",
+            color: "rgba(210, 180, 140, 0.75)", marginBottom: 16,
+          }}>
+            Computer Engineering Student · San Jose del Monte, PH
+          </div>
+          <p style={{
+            fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
+            lineHeight: 1.9, color: "rgba(245, 240, 230, 0.8)",
+            margin: "0 0 16px 0",
+          }}>
+            CpE student at PUP who builds useful, readable interfaces and
+            student tools. Worked with React, Python, Tailwind, and Socket.IO
+            across full-stack projects, data visualizations, and real-time
+            apps. Experience includes CliqueHa Information Services OPC.
+          </p>
+          <div style={{ display: "flex", gap: 28, marginBottom: 20 }}>
+            {[
+              { v: counters.years, l: "Years", s: "+" },
+              { v: counters.projects, l: "Projects", s: "+" },
+              { v: "∞", l: "Ramen", s: "" },
+            ].map(s => (
+              <div key={s.l}>
+                <div style={{
+                  fontFamily: "'Noto Serif JP', serif", fontSize: 22,
+                  fontWeight: 900, color: "#d4a050",
+                }}>
+                  {s.v}{s.s}
+                </div>
+                <div style={{
+                  fontFamily: "'JetBrains Mono', monospace", fontSize: 8,
+                  letterSpacing: "0.15em", textTransform: "uppercase",
+                    color: "rgba(210, 180, 140, 0.6)", marginTop: 2,
+                }}>
+                  {s.l}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{
+            height: 1,
+            background: "linear-gradient(90deg, rgba(160, 120, 80, 0.15), transparent)",
+            marginBottom: 18,
+          }} />
+
+          <div style={{
+            fontSize: 10, letterSpacing: "0.5em", textTransform: "uppercase",
+            color: "#c9a468", marginBottom: 14,
+            fontFamily: "'JetBrains Mono', monospace",
+          }}>
+            ── Journey
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {journey.map((item, i) => (
+              <div key={i} style={{ display: "flex", gap: 12 }}>
+                <div style={{
+                  width: 2, flexShrink: 0, borderRadius: 2,
+                  background: item.accent
+                    ? "linear-gradient(180deg, #c9a468, rgba(201, 164, 104, 0.15))"
+                    : "rgba(200, 160, 120, 0.1)",
+                }} />
+                <div>
+                  <div style={{
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
+                    letterSpacing: "0.15em", textTransform: "uppercase",
+                    color: "rgba(210, 180, 140, 0.65)", marginBottom: 2,
+                  }}>
+                    {item.year}
+                  </div>
+                  <div style={{
+                    fontFamily: "'Noto Serif JP', serif", fontSize: 13,
+                    fontWeight: 700, color: "#f5f0eb", marginBottom: 1,
+                  }}>
+                    {item.title}
+                  </div>
+                  <div style={{
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
+                    color: "rgba(245, 240, 230, 0.65)",
+                  }}>
+                    {item.sub}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-
-        {/* Bio */}
-        <p style={{
-          fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 12,
-          lineHeight: 2,
-          color: "rgba(255, 240, 220, 0.6)",
-          margin: "0 0 24px 0",
-        }}>
-          A passionate developer from Manila, Philippines crafting immersive 
-          web experiences. PUP student by day, building creative projects by 
-          night. I work at the intersection of code and design — making things 
-          that feel alive.
-        </p>
 
         {/* Divider */}
         <div style={{
-          width: "100%",
           height: 1,
-          background: "linear-gradient(90deg, rgba(200, 80, 40, 0.3), transparent)",
-          margin: "0 0 20px 0",
+          background: "linear-gradient(90deg, rgba(160, 120, 80, 0.15), transparent)",
         }} />
 
-        {/* Stats row — animated shinobi record */}
-        <div style={{ display: "flex", gap: 32, marginBottom: 24 }}>
-          {[
-            { value: counters.years, label: "Years Coding", suffix: "+" },
-            { value: counters.projects, label: "Projects", suffix: "+" },
-            { value: "∞", label: "Ramen Eaten", suffix: "" },
-          ].map(stat => (
-            <div key={stat.label}>
-              <div style={{
-                fontFamily: "'Noto Serif JP', serif",
-                fontSize: 24,
-                fontWeight: 900,
-                color: "#c83020",
-              }}>
-                {stat.value}{stat.suffix}
-              </div>
-              <div style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 9,
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                color: "rgba(250, 200, 150, 0.4)",
-                marginTop: 2,
-              }}>
-                {stat.label}
-              </div>
+        {/* Auto-scrolling Tech Stack */}
+        <div style={{ padding: "16px 44px 22px" }}>
+          <div style={{
+            fontFamily: "'JetBrains Mono', monospace", fontSize: 8,
+            letterSpacing: "0.5em", textTransform: "uppercase",
+            color: "rgba(210, 180, 140, 0.55)", marginBottom: 12,
+          }}>
+            ── Tech Stack
+          </div>
+          <div style={{
+            overflow: "hidden",
+            maskImage: "linear-gradient(90deg, transparent 0, #000 30px, #000 calc(100% - 30px), transparent 100%)",
+            WebkitMaskImage: "linear-gradient(90deg, transparent 0, #000 30px, #000 calc(100% - 30px), transparent 100%)",
+          }}>
+            <div className="tech-marquee-track" style={{
+              display: "flex", gap: 28, width: "fit-content",
+              animation: "techMarquee 30s linear infinite",
+            }}>
+              {[...aboutSkills, ...aboutSkills].map((s, i) => (
+                <img
+                  key={i}
+                  src={`https://skillicons.dev/icons?i=${s.icon}&theme=dark`}
+                  alt={s.name}
+                  width={24}
+                  height={24}
+                  style={{ display: "block", flexShrink: 0 }}
+                />
+              ))}
             </div>
-          ))}
+          </div>
         </div>
-
-        {/* Skills — Jutsu proficiency bars */}
-        <div style={{
-          fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 9,
-          letterSpacing: "0.15em",
-          textTransform: "uppercase",
-          color: "rgba(250, 200, 150, 0.35)",
-          marginBottom: 10,
-        }}>
-          Jutsu (Skills)
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          {[
-            { name: "React", kanji: "火", value: 95 },
-            { name: "TypeScript", kanji: "火", value: 90 },
-            { name: "JavaScript", kanji: "炎", value: 85 },
-            { name: "Vite", kanji: "風", value: 88 },
-            { name: "Tailwind CSS", kanji: "風", value: 82 },
-            { name: "R3F / Three.js", kanji: "雷", value: 80 },
-            { name: "GSAP", kanji: "雷", value: 78 },
-            { name: "Node.js", kanji: "水", value: 75 },
-            { name: "Next.js", kanji: "水", value: 72 },
-            { name: "Laravel", kanji: "水", value: 65 },
-            { name: "Docker", kanji: "土", value: 60 },
-            { name: "Supabase", kanji: "土", value: 55 },
-          ].map(skill => <SkillBar key={skill.name} skill={skill} visible={visible} />)}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── SKILL BAR — animated jutsu proficiency, reused in About ─── */
-function SkillBar({ skill, visible }: { skill: { name: string; kanji: string; value: number }; visible: boolean }) {
-  const fillRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!fillRef.current) return;
-    if (visible) {
-      gsap.fromTo(fillRef.current, { width: "0%" }, { width: `${skill.value}%`, duration: 0.8, ease: "power3.out", delay: 0.3 });
-    } else {
-      gsap.set(fillRef.current, { width: "0%" });
-    }
-  }, [visible, skill.value]);
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <div style={{
-        fontFamily: "'Noto Serif JP', serif",
-        fontSize: 11,
-        fontWeight: 700,
-        color: "rgba(250, 200, 150, 0.5)",
-        width: 16,
-        textAlign: "center",
-        flexShrink: 0,
-      }}>
-        {skill.kanji}
-      </div>
-      <div style={{
-        fontFamily: "'JetBrains Mono', monospace",
-        fontSize: 9,
-        color: "rgba(255, 220, 180, 0.5)",
-        width: 100,
-        flexShrink: 0,
-      }}>
-        {skill.name}
-      </div>
-      <div style={{
-        flex: 1,
-        height: 6,
-        background: "rgba(255, 255, 255, 0.06)",
-        borderRadius: 999,
-        overflow: "hidden",
-      }}>
-        <div ref={fillRef} style={{
-          height: "100%",
-          background: "linear-gradient(90deg, #c83020, #ff6040)",
-          borderRadius: 999,
-          boxShadow: "0 0 8px rgba(200, 50, 30, 0.6)",
-          width: "0%",
-        }} />
-      </div>
-      <div style={{
-        fontFamily: "'JetBrains Mono', monospace",
-        fontSize: 9,
-        color: "rgba(250, 200, 150, 0.45)",
-        width: 26,
-        textAlign: "right",
-        flexShrink: 0,
-      }}>
-        {skill.value}
       </div>
     </div>
   );
