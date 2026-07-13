@@ -437,6 +437,7 @@ interface ProjectCard {
   stats: { label: string; jp: string; value: number }[];
   tech: string[];
   url: string;
+  screenshot?: string;
   status: "Live" | "WIP" | "Planned";
 }
 
@@ -455,6 +456,7 @@ const projects: ProjectCard[] = [
     ],
     tech: ["R3F", "Three.js", "GSAP", "TypeScript"],
     url: "https://github.com/Ramenagii/ramen-shop",
+    screenshot: "/images/portfolio-projects/portfolio.png",
     status: "Live",
   },
   {
@@ -471,6 +473,7 @@ const projects: ProjectCard[] = [
     ],
     tech: ["Next.js", "Supabase", "AI", "Vercel"],
     url: "https://github.com/Ramenagii/ai-website-factory",
+    screenshot: "/images/portfolio-projects/ai-website-factory.png",
     status: "Live",
   },
   {
@@ -487,6 +490,7 @@ const projects: ProjectCard[] = [
     ],
     tech: ["Laravel", "Livewire", "Docker", "MySQL"],
     url: "https://github.com/Ramenagii/laravel-docker",
+    screenshot: "/images/portfolio-projects/laravel-docker.png",
     status: "Live",
   },
   {
@@ -503,6 +507,7 @@ const projects: ProjectCard[] = [
     ],
     tech: ["React", "TypeScript", "Cloudflare", "AI"],
     url: "https://github.com/Ramenagii/reviewer-study-hub",
+    screenshot: "/images/portfolio-projects/reviewer-study-hub.png",
     status: "Live",
   },
   {
@@ -519,6 +524,7 @@ const projects: ProjectCard[] = [
     ],
     tech: ["React", "Supabase", "Tailwind", "Vite"],
     url: "https://github.com/Ramenagii/EljonPharmacy",
+    screenshot: "/images/portfolio-projects/eljon-pharmacy.png",
     status: "Live",
   },
   {
@@ -535,6 +541,7 @@ const projects: ProjectCard[] = [
     ],
     tech: ["React", "JavaScript"],
     url: "https://github.com/Ramenagii/benchflow-queue",
+    screenshot: "/images/portfolio-projects/benchflow-queue.png",
     status: "Live",
   },
   {
@@ -551,6 +558,7 @@ const projects: ProjectCard[] = [
     ],
     tech: ["React", "TypeScript", "Vite", "IoT"],
     url: "https://github.com/Ramenagii/mor-power-management-dashboard",
+    screenshot: "/images/portfolio-projects/mor-power-dashboard.png",
     status: "Live",
   },
   {
@@ -567,6 +575,7 @@ const projects: ProjectCard[] = [
     ],
     tech: ["React", "TypeScript", "Local-first", "Vite"],
     url: "https://github.com/Ramenagii/chore-allowance-ledger",
+    screenshot: "/images/portfolio-projects/chore-allowance-ledger.png",
     status: "Live",
   },
   {
@@ -583,7 +592,7 @@ const projects: ProjectCard[] = [
     ],
     tech: ["Node.js", "Mobile", "Bridge", "PowerShell"],
     url: "https://github.com/Ramenagii/mobile-codex-controller",
-    status: "Live",
+    status: "WIP",
   },
   {
     kanji: "算",
@@ -599,6 +608,7 @@ const projects: ProjectCard[] = [
     ],
     tech: ["React", "Vite", "Tailwind", "DSA"],
     url: "https://github.com/Ramenagii/DSA-7Cases-Study",
+    screenshot: "/images/portfolio-projects/dsa-7cases-study.png",
     status: "Live",
   },
 ];
@@ -692,52 +702,51 @@ function MissionCard({ p, index }: { p: ProjectCard; index: number }) {
       onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.boxShadow = `0 16px 44px rgba(0,0,0,0.6), 0 0 30px ${rc.glow}, inset 0 0 20px ${rc.glow}`; }}
       onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = `0 8px 30px rgba(0,0,0,0.5), inset 0 0 20px ${rc.glow.replace("0.5", "0.08").replace("0.45", "0.08").replace("0.4", "0.06")}`; }}
     >
-      {/* ── PORTRAIT AREA — kanji watermark + rank seal ── */}
+      {/* ── PORTRAIT AREA — screenshot or kanji watermark + rank seal ── */}
       <div style={{
         position: "relative",
         height: 170,
-        background: `radial-gradient(ellipse at 50% 40%, ${rc.glow.replace("0.5", "0.18").replace("0.45", "0.15").replace("0.4", "0.12")} 0%, rgba(10,6,4,0.6) 70%)`,
+        background: p.screenshot
+          ? `radial-gradient(ellipse at 50% 40%, ${rc.glow.replace("0.5", "0.18").replace("0.45", "0.15").replace("0.4", "0.12")} 0%, rgba(10,6,4,0.6) 70%)`
+          : `radial-gradient(ellipse at 50% 40%, ${rc.glow.replace("0.5", "0.18").replace("0.45", "0.15").replace("0.4", "0.12")} 0%, rgba(10,6,4,0.6) 70%)`,
         borderBottom: `1px solid ${rc.glow.replace("0.5", "0.2").replace("0.45", "0.2").replace("0.4", "0.15")}`,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         overflow: "hidden",
       }}>
-        {/* Giant kanji "character portrait" */}
+        {/* Screenshot */}
+        {p.screenshot && (
+          <img
+            src={p.screenshot}
+            alt={p.title}
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              opacity: 0.7,
+            }}
+          />
+        )}
+
+        {/* Giant kanji "character portrait" — watermark over screenshot */}
         <div style={{
+          position: "relative",
+          zIndex: 1,
           fontFamily: "'Noto Serif JP', serif",
           fontSize: 110,
           fontWeight: 900,
           color: rc.text,
-          opacity: 0.12,
+          opacity: p.screenshot ? 0.35 : 0.12,
           lineHeight: 1,
           textShadow: `0 0 40px ${rc.glow}`,
           userSelect: "none",
+          pointerEvents: "none",
         }}>
           {p.kanji}
         </div>
-
-        {/* Concentric ring (village-symbol vibe) */}
-        <div style={{
-          position: "absolute",
-          width: 120,
-          height: 120,
-          border: `1.5px solid ${rc.glow.replace("0.5", "0.25").replace("0.45", "0.25").replace("0.4", "0.2")}`,
-          borderRadius: "50%",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-        }} />
-        <div style={{
-          position: "absolute",
-          width: 80,
-          height: 80,
-          border: `1px solid ${rc.glow.replace("0.5", "0.15").replace("0.45", "0.15").replace("0.4", "0.12")}`,
-          borderRadius: "50%",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-        }} />
 
         {/* Rank seal — wax stamp, top-right corner */}
         <div style={{
