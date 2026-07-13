@@ -30,11 +30,6 @@ export default function Shop() {
     const scaledSize = rawSize.clone().multiplyScalar(scaleFactor);
     const scaledCenter = scaledMin.clone().add(scaledMax).multiplyScalar(0.5);
 
-    console.log("[Shop] raw size:", rawSize);
-    console.log("[Shop] scaleFactor:", scaleFactor);
-    console.log("[Shop] scaled size:", scaledSize);
-    console.log("[Shop] scaled center:", scaledCenter);
-
     setModelBounds({
       min: [scaledMin.x, scaledMin.y, scaledMin.z],
       max: [scaledMax.x, scaledMax.y, scaledMax.z],

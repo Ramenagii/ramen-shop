@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 /* Clone sound */
 const cloneSfx = typeof window !== "undefined" ? new Audio("/audio/clone%20sound.mp3") : null;
 if (cloneSfx) { cloneSfx.volume = 0.4; cloneSfx.preload = "auto"; }
@@ -160,18 +161,61 @@ function InfoSide() {
 
 /* Form side */
 function FormSide() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [status, setStatus] = useState<"idle" | "sent" | "error">("idle");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+    setStatus("idle");
+
+    const { error } = await supabase.from("contact_messages").insert({
+      name: name.trim(),
+      email: email.trim(),
+      message: message.trim(),
+    });
+
+    setSubmitting(false);
+    if (error) {
+      console.warn("[Contact] submit error:", error.message);
+      setStatus("error");
+    } else {
+      setStatus("sent");
+      setName("");
+      setEmail("");
+      setMessage("");
+    }
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 6, width: "100%" }}>
       <div style={{ fontFamily: "'Noto Serif JP', serif", fontSize: "clamp(14px, 2vw, 18px)", fontWeight: 900, color: "#2a1810" }}>伝書の術</div>
       <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, letterSpacing: "0.2em", textTransform: "uppercase", color: "#8b5e3c", marginBottom: 4 }}>Send a Message</div>
-      <form onSubmit={(e) => { e.preventDefault(); alert("Scroll sent! 📜"); }} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-          <input type="text" placeholder="Name" required style={inputCSS} />
-          <input type="email" placeholder="Email" required style={inputCSS} />
+      {status === "sent" ? (
+        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "#2a1810", padding: "12px 0", textAlign: "center" }}>
+          ✓ Scroll delivered. I'll reply soon.
         </div>
-        <textarea placeholder="Message..." rows={2} required style={{ ...inputCSS, resize: "none", minHeight: 44 }} />
-        <button type="submit" style={{ alignSelf: "flex-start", fontFamily: "'JetBrains Mono', monospace", fontSize: 9, letterSpacing: "0.15em", textTransform: "uppercase", padding: "6px 14px", background: "#3a281a", color: "#e9dcc2", border: "1px solid #c9a468", borderRadius: 3, cursor: "pointer" }}>✦ Send</button>
-      </form>
+      ) : (
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            <input type="text" placeholder="Name" required value={name} onChange={(e) => setName(e.target.value)} style={inputCSS} />
+            <input type="email" placeholder="Email" required value={email} onChange={(e) => setEmail(e.target.value)} style={inputCSS} />
+          </div>
+          <textarea placeholder="Message..." rows={2} required value={message} onChange={(e) => setMessage(e.target.value)} style={{ ...inputCSS, resize: "none", minHeight: 44 }} />
+          {status === "error" && (
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: "#c83020" }}>
+              ✗ Failed to send. Try again later.
+            </div>
+          )}
+          <button type="submit" disabled={submitting} style={{ alignSelf: "flex-start", fontFamily: "'JetBrains Mono', monospace", fontSize: 9, letterSpacing: "0.15em", textTransform: "uppercase", padding: "6px 14px", background: "#3a281a", color: "#e9dcc2", border: "1px solid #c9a468", borderRadius: 3, cursor: submitting ? "default" : "pointer", opacity: submitting ? 0.6 : 1 }}>
+            {submitting ? "✦ Sending..." : "✦ Send"}
+          </button>
+        </form>
+      )}
     </div>
   );
 }

@@ -189,7 +189,7 @@ function AboutSection({ visible }: { visible: boolean }) {
       gsap.fromTo(ref.current, { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" });
       const obj = { years: 0, projects: 0 };
       gsap.to(obj, {
-        years: 3, projects: 14,
+        years: 3, projects: 10,
         duration: 1.2, ease: "power3.out", delay: 0.4,
         onUpdate: () => setCounters({ years: Math.round(obj.years), projects: Math.round(obj.projects) }),
       });
@@ -226,9 +226,10 @@ function AboutSection({ visible }: { visible: boolean }) {
 
   const journey = [
     { year: "2026", title: "B.S. Computer Engineering", sub: "Polytechnic University of the Philippines", accent: true },
-    { year: "2025", title: "CliqueHa Information Services OPC", sub: "Platform work · GoHighLevel · AutoCAD support", accent: false },
+    { year: "2026", title: "CliqueHa Information Services OPC", sub: "Platform work · GoHighLevel · AutoCAD", accent: false },
     { year: "2025", title: "Pharmacy POS System", sub: "EljonPharmacy — React + Supabase", accent: false },
-    { year: "2024", title: "DSA Case Studies App", sub: "React + Framer Motion + D3.js + Three.js", accent: false },
+    { year: "2025", title: "DSA Case Studies App", sub: "React + Framer Motion + D3.js + Three.js", accent: false },
+    { year: "2024", title: "SOP Automation Pipeline", sub: "Python · FastAPI · Web crawling · LLM", accent: false },
     { year: "2023", title: "Started Coding", sub: "Self-taught · React · JavaScript", accent: false },
   ];
 
@@ -309,9 +310,10 @@ function AboutSection({ visible }: { visible: boolean }) {
             margin: "0 0 16px 0",
           }}>
             CpE student at PUP who builds useful, readable interfaces and
-            student tools. Worked with React, Python, Tailwind, and Socket.IO
-            across full-stack projects, data visualizations, and real-time
-            apps. Experience includes CliqueHa Information Services OPC.
+            practical student tools. Full-stack work across React, Python,
+            Laravel, and Three.js — from pharmacy POS systems to 3D
+            portfolios. When I'm not coding I'm watching T1, listening to
+            Luke Chiang on repeat, or pretending I know how to cook.
           </p>
           <div style={{ display: "flex", gap: 28, marginBottom: 20 }}>
             {[
